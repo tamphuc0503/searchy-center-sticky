@@ -1,10 +1,21 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import Header from '@/components/Header';
 import { Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import RegistrationForm from '@/components/RegistrationForm';
 
 const Pricing = () => {
+  const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
+
+  const handleGetStarted = (planName: string) => {
+    setSelectedPlan(planName);
+  };
+
+  const handleCloseForm = () => {
+    setSelectedPlan(null);
+  };
+
   return (
     <div className="min-h-screen pt-24 px-6">
       <Header />
@@ -48,13 +59,21 @@ const Pricing = () => {
                 </ul>
               </div>
               
-              <Button className="mt-6 w-full" variant={index === 0 ? "default" : "outline"}>
+              <Button 
+                className="mt-6 w-full" 
+                variant={index === 0 ? "default" : "outline"}
+                onClick={() => handleGetStarted(plan.name)}
+              >
                 Get started
               </Button>
             </div>
           ))}
         </div>
       </div>
+
+      {selectedPlan && (
+        <RegistrationForm planName={selectedPlan} onClose={handleCloseForm} />
+      )}
     </div>
   );
 };
