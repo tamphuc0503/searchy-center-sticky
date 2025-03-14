@@ -1,14 +1,56 @@
 
-import React, { useState } from 'react';
+import React, { useState, FormEvent } from 'react';
 import { Search } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { searchApi } from '@/services/searchService';
+import { useToast } from "@/components/ui/use-toast";
 
-const SearchBar = () => {
+interface SearchBarProps {
+  onSearchResults: (results: any[] | null) => void;
+  onSearchStart: () => void;
+}
+
+const SearchBar = ({ onSearchResults, onSearchStart }: SearchBarProps) => {
   const [focused, setFocused] = useState(false);
   const [query, setQuery] = useState('');
+  const { toast } = useToast();
+
+  const handleSearch = async (e: FormEvent) => {
+    e.preventDefault();
+    
+    if (!query.trim()) {
+      toast({
+        title: "Search query is empty",
+        description: "Please enter something to search for",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    onSearchStart();
+    
+    try {
+      const response = await searchApi(query);
+      onSearchResults(response.items);
+      
+      toast({
+        title: "Search completed",
+        description: `Found ${response.items.length} results`,
+      });
+    } catch (error) {
+      console.error("Search error:", error);
+      onSearchResults(null);
+      
+      toast({
+        title: "Search failed",
+        description: "There was an error processing your search",
+        variant: "destructive",
+      });
+    }
+  };
 
   return (
-    <div className="search-container">
+    <form onSubmit={handleSearch} className="search-container w-full max-w-3xl">
       <div
         className={cn(
           "relative flex items-center transition-all duration-300 ease-in-out",
@@ -42,12 +84,20 @@ const SearchBar = () => {
         
         {query && (
           <button
+            type="button"
             onClick={() => setQuery('')}
             className="px-4 h-full text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
             Clear
           </button>
         )}
+        
+        <button
+          type="submit"
+          className="h-12 px-6 text-sm font-medium text-primary-foreground bg-primary rounded-r-full hover:bg-primary/90 transition-colors"
+        >
+          Search
+        </button>
       </div>
       
       {focused && (
@@ -55,7 +105,7 @@ const SearchBar = () => {
           Press Enter to search
         </div>
       )}
-    </div>
+    </form>
   );
 };
 

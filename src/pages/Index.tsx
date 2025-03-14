@@ -1,14 +1,28 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import Header from '@/components/Header';
 import SearchBar from '@/components/SearchBar';
+import SearchResults from '@/components/SearchResults';
+import { SearchItem } from '@/services/searchService';
 
 const Index = () => {
+  const [searchResults, setSearchResults] = useState<SearchItem[] | null>(null);
+  const [isSearching, setIsSearching] = useState(false);
+
+  const handleSearchStart = () => {
+    setIsSearching(true);
+  };
+
+  const handleSearchResults = (results: SearchItem[] | null) => {
+    setSearchResults(results);
+    setIsSearching(false);
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
       
-      <main className="flex-1 flex flex-col justify-center items-center px-6 animate-fade-in">
+      <main className="flex-1 flex flex-col justify-center items-center px-6 py-12 animate-fade-in">
         <div className="max-w-4xl w-full text-center mb-12 space-y-4">
           <h1 className="text-4xl font-bold tracking-tight sm:text-6xl">
             Find what you're looking for
@@ -18,19 +32,29 @@ const Index = () => {
           </p>
         </div>
         
-        <SearchBar />
+        <SearchBar 
+          onSearchStart={handleSearchStart}
+          onSearchResults={handleSearchResults}
+        />
         
-        <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl w-full animate-slide-in">
-          {features.map((feature, index) => (
-            <div 
-              key={index} 
-              className="p-6 rounded-xl border bg-card text-center transition-all duration-300 hover:shadow-md"
-            >
-              <h3 className="text-lg font-medium mb-2">{feature.title}</h3>
-              <p className="text-sm text-muted-foreground">{feature.description}</p>
-            </div>
-          ))}
-        </div>
+        <SearchResults 
+          results={searchResults} 
+          isLoading={isSearching}
+        />
+        
+        {!searchResults && !isSearching && (
+          <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl w-full animate-slide-in">
+            {features.map((feature, index) => (
+              <div 
+                key={index} 
+                className="p-6 rounded-xl border bg-card text-center transition-all duration-300 hover:shadow-md"
+              >
+                <h3 className="text-lg font-medium mb-2">{feature.title}</h3>
+                <p className="text-sm text-muted-foreground">{feature.description}</p>
+              </div>
+            ))}
+          </div>
+        )}
       </main>
       
       <footer className="py-6 border-t">
