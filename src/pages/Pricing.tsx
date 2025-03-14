@@ -48,7 +48,7 @@ const Pricing = () => {
                 </ul>
               </div>
               
-              <Button className="mt-6 w-full" variant={index === 1 ? "default" : "outline"}>
+              <Button className="mt-6 w-full" variant={index === 0 ? "default" : "outline"}>
                 Get started
               </Button>
             </div>
