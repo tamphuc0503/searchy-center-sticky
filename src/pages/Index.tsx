@@ -3,19 +3,41 @@ import React, { useState } from 'react';
 import Header from '@/components/Header';
 import SearchBar from '@/components/SearchBar';
 import SearchResults from '@/components/SearchResults';
-import { SearchItem } from '@/services/searchService';
+import { SearchResponse, searchApi } from '@/services/searchService';
 
 const Index = () => {
-  const [searchResults, setSearchResults] = useState<SearchItem[] | null>(null);
+  const [searchData, setSearchData] = useState<SearchResponse | null>(null);
   const [isSearching, setIsSearching] = useState(false);
+  const [currentQuery, setCurrentQuery] = useState('');
 
   const handleSearchStart = () => {
     setIsSearching(true);
   };
 
-  const handleSearchResults = (results: SearchItem[] | null) => {
-    setSearchResults(results);
+  const handleSearchResults = (results: SearchResponse | null) => {
+    setSearchData(results);
     setIsSearching(false);
+    if (results) {
+      setCurrentQuery(results.pagination.currentPage === 1 ? '' : currentQuery);
+    }
+  };
+
+  const handlePageChange = async (page: number) => {
+    if (!currentQuery && searchData) {
+      // If we have results but no query stored (happens on first search),
+      // use an empty string to get all results
+      setCurrentQuery('');
+    }
+    
+    setIsSearching(true);
+    try {
+      const response = await searchApi(currentQuery || '', page);
+      setSearchData(response);
+    } catch (error) {
+      console.error("Error fetching page:", error);
+    } finally {
+      setIsSearching(false);
+    }
   };
 
   return (
@@ -38,11 +60,12 @@ const Index = () => {
         />
         
         <SearchResults 
-          results={searchResults} 
+          searchData={searchData} 
           isLoading={isSearching}
+          onPageChange={handlePageChange}
         />
         
-        {!searchResults && !isSearching && (
+        {!searchData && !isSearching && (
           <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl w-full animate-slide-in">
             {features.map((feature, index) => (
               <div 

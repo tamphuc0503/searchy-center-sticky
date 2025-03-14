@@ -2,11 +2,11 @@
 import React, { useState, FormEvent } from 'react';
 import { Search } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { searchApi } from '@/services/searchService';
+import { searchApi, SearchResponse } from '@/services/searchService';
 import { useToast } from "@/components/ui/use-toast";
 
 interface SearchBarProps {
-  onSearchResults: (results: any[] | null) => void;
+  onSearchResults: (results: SearchResponse | null) => void;
   onSearchStart: () => void;
 }
 
@@ -31,11 +31,11 @@ const SearchBar = ({ onSearchResults, onSearchStart }: SearchBarProps) => {
     
     try {
       const response = await searchApi(query);
-      onSearchResults(response.items);
+      onSearchResults(response);
       
       toast({
         title: "Search completed",
-        description: `Found ${response.items.length} results`,
+        description: `Found ${response.pagination.totalItems} results`,
       });
     } catch (error) {
       console.error("Search error:", error);
