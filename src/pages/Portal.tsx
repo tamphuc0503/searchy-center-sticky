@@ -14,14 +14,17 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
   SidebarTrigger,
-  SidebarInset
+  SidebarInset,
+  SidebarRail
 } from '@/components/ui/sidebar';
-import { LayoutDashboard, FileText, MapPin, LogOut } from 'lucide-react';
+import { LayoutDashboard, FileText, MapPin, LogOut, PanelLeftClose, User } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import Dashboard from '@/components/portal/Dashboard';
 import MySDSFiles from '@/components/portal/MySDSFiles';
 import Locations from '@/components/portal/Locations';
 import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Separator } from "@/components/ui/separator";
 
 const Portal = () => {
   const [activeSection, setActiveSection] = React.useState<'dashboard' | 'files' | 'locations'>('dashboard');
@@ -88,7 +91,19 @@ const Portal = () => {
             </SidebarGroup>
           </SidebarContent>
           
-          <SidebarFooter className="p-4">
+          <SidebarFooter className="p-4 space-y-4">
+            {/* User Profile Section */}
+            <div className="flex items-center space-x-3 px-2 py-2 rounded-md">
+              <Avatar>
+                <AvatarImage src="https://github.com/shadcn.png" alt="User" />
+                <AvatarFallback>JD</AvatarFallback>
+              </Avatar>
+              <div>
+                <p className="text-sm font-medium">John Doe</p>
+                <p className="text-xs text-muted-foreground">john.doe@example.com</p>
+              </div>
+            </div>
+            <Separator />
             <Button 
               variant="outline" 
               className="w-full flex items-center gap-2" 
@@ -99,6 +114,9 @@ const Portal = () => {
             </Button>
           </SidebarFooter>
         </Sidebar>
+        
+        {/* Add SidebarRail for better UX when collapsing/expanding */}
+        <SidebarRail />
         
         <SidebarInset className="p-6">
           {activeSection === 'dashboard' && <Dashboard />}
