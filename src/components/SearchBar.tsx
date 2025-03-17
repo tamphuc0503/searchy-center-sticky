@@ -3,7 +3,7 @@ import React, { useState, FormEvent } from 'react';
 import { Search } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { searchApi, SearchResponse } from '@/services/searchService';
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 
 interface SearchBarProps {
   onSearchResults: (results: SearchResponse | null) => void;
@@ -18,7 +18,7 @@ const SearchBar = ({ onSearchResults, onSearchStart }: SearchBarProps) => {
   const handleSearch = async (e: FormEvent) => {
     e.preventDefault();
     
-    if (!query.trim()) {
+    if (!query.trim() && query.trim() !== '') {
       toast({
         title: "Search query is empty",
         description: "Please enter something to search for",
@@ -35,7 +35,7 @@ const SearchBar = ({ onSearchResults, onSearchStart }: SearchBarProps) => {
       
       toast({
         title: "Search completed",
-        description: `Found ${response.pagination.totalItems} results`,
+        description: `Found ${response.pagination.totalItems} Safety Data Sheets`,
       });
     } catch (error) {
       console.error("Search error:", error);
@@ -70,7 +70,7 @@ const SearchBar = ({ onSearchResults, onSearchStart }: SearchBarProps) => {
         
         <input
           type="text"
-          placeholder="Search anything..."
+          placeholder="Search for a product, substance, or CAS number..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onFocus={() => setFocused(true)}

@@ -1,17 +1,21 @@
 
-// Mock API service that returns sample search results
-// In a real application, this would fetch from an actual API endpoint
+// Mock API service that returns sample Safety Data Sheet (SDS) search results
 
-export interface SearchItem {
+export interface SDSItem {
   id: string;
-  name: string;
-  description: string;
-  fileUrl: string;
+  productName: string;
+  substanceName: string;
+  manufacturerName: string;
+  revisionDate: string;
+  ghs: string[];
+  casNo: string;
+  components: string[];
   imageUrl: string;
+  fileUrl: string;
 }
 
 export interface SearchResponse {
-  items: SearchItem[];
+  items: SDSItem[];
   pagination: {
     currentPage: number;
     totalPages: number;
@@ -20,38 +24,78 @@ export interface SearchResponse {
   };
 }
 
-// Generate a larger dataset of sample items
-const generateSampleItems = (): SearchItem[] => {
-  const categories = ['Report', 'Documentation', 'Research', 'Presentation', 'Analysis', 'Case Study', 'Blueprint'];
-  const departments = ['Marketing', 'Finance', 'Engineering', 'Design', 'Operations', 'Sales', 'HR'];
-  const fileTypes = ['.pdf', '.docx', '.xlsx', '.pptx', '.zip'];
+// Generate SDS sample items
+const generateSampleSDSItems = (): SDSItem[] => {
+  const manufacturers = ['3M', 'DuPont', 'BASF', 'Dow Chemical', 'ExxonMobil', 'Sherwin-Williams', 'PPG Industries'];
+  const substances = ['Acetone', 'Methanol', 'Toluene', 'Ethanol', 'Isopropyl Alcohol', 'Hydrogen Peroxide', 'Sodium Hydroxide', 'Sulfuric Acid'];
+  const ghsLabels = ['Flammable', 'Toxic', 'Corrosive', 'Environmentally Hazardous', 'Oxidizing', 'Explosive', 'Health Hazard', 'Acute Toxicity'];
   
   const imageUrls = [
-    "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80",
-    "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80",
-    "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80",
-    "https://images.unsplash.com/photo-1582738412230-e8af881fab34?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80",
-    "https://images.unsplash.com/photo-1558611848-f4b15f4fa202?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80",
-    "https://images.unsplash.com/photo-1543286386-2e659306cd6c?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80",
-    "https://images.unsplash.com/photo-1555066931-4365d14bab8c?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80",
-    "https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80"
+    "https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80",
+    "https://images.unsplash.com/photo-1581092921461-39b9d317e73c?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80",
+    "https://images.unsplash.com/photo-1562751362-404243c2989b?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80",
+    "https://images.unsplash.com/photo-1583426573939-97d09302d76a?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80",
+    "https://images.unsplash.com/photo-1581093588401-fbb62a02f120?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80",
+    "https://images.unsplash.com/photo-1580169980114-ccd0babfa840?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80"
   ];
   
-  // Create 67 sample items (as requested)
-  const items: SearchItem[] = [];
-  for (let i = 1; i <= 67; i++) {
-    const category = categories[Math.floor(Math.random() * categories.length)];
-    const department = departments[Math.floor(Math.random() * departments.length)];
-    const fileType = fileTypes[Math.floor(Math.random() * fileTypes.length)];
-    const quarter = Math.floor(Math.random() * 4) + 1;
-    const year = 2022 + Math.floor(Math.random() * 3);
+  // Generate CAS numbers
+  const generateCasNo = () => {
+    const part1 = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+    const part2 = Math.floor(Math.random() * 100).toString().padStart(2, '0');
+    const part3 = Math.floor(Math.random() * 10).toString();
+    return `${part1}-${part2}-${part3}`;
+  };
+  
+  // Generate random date within the last 3 years
+  const generateRevisionDate = () => {
+    const now = new Date();
+    const threeYearsAgo = new Date();
+    threeYearsAgo.setFullYear(now.getFullYear() - 3);
+    
+    const randomTimestamp = threeYearsAgo.getTime() + Math.random() * (now.getTime() - threeYearsAgo.getTime());
+    const date = new Date(randomTimestamp);
+    
+    return date.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+  };
+  
+  // Create 77 sample items (as requested)
+  const items: SDSItem[] = [];
+  for (let i = 1; i <= 77; i++) {
+    const manufacturer = manufacturers[Math.floor(Math.random() * manufacturers.length)];
+    const substance = substances[Math.floor(Math.random() * substances.length)];
+    
+    // Generate 1-3 random GHS labels
+    const numGhs = Math.floor(Math.random() * 3) + 1;
+    const ghs: string[] = [];
+    for (let j = 0; j < numGhs; j++) {
+      const randomGhs = ghsLabels[Math.floor(Math.random() * ghsLabels.length)];
+      if (!ghs.includes(randomGhs)) {
+        ghs.push(randomGhs);
+      }
+    }
+    
+    // Generate 1-3 random components
+    const numComponents = Math.floor(Math.random() * 3) + 1;
+    const components: string[] = [];
+    for (let j = 0; j < numComponents; j++) {
+      const randomSubstance = substances[Math.floor(Math.random() * substances.length)];
+      if (!components.includes(randomSubstance)) {
+        components.push(randomSubstance);
+      }
+    }
     
     items.push({
       id: i.toString().padStart(3, '0'),
-      name: `${department} ${category} Q${quarter} ${year}`,
-      description: `${department} ${category.toLowerCase()} with comprehensive analysis and insights for Q${quarter} ${year}`,
-      fileUrl: `https://example.com/files/${department.toLowerCase()}-${category.toLowerCase()}${fileType}`,
-      imageUrl: imageUrls[Math.floor(Math.random() * imageUrls.length)]
+      productName: `${manufacturer} ${substance} ${Math.floor(Math.random() * 100)}`,
+      substanceName: substance,
+      manufacturerName: manufacturer,
+      revisionDate: generateRevisionDate(),
+      ghs,
+      casNo: generateCasNo(),
+      components,
+      imageUrl: imageUrls[Math.floor(Math.random() * imageUrls.length)],
+      fileUrl: `https://example.com/sds/${manufacturer.toLowerCase()}-${substance.toLowerCase().replace(' ', '-')}.pdf`
     });
   }
   
@@ -59,10 +103,10 @@ const generateSampleItems = (): SearchItem[] => {
 };
 
 // Create our dataset once
-const allSampleItems = generateSampleItems();
+const allSampleItems = generateSampleSDSItems();
 
 export const searchApi = async (query: string, page: number = 1, itemsPerPage: number = 10): Promise<SearchResponse> => {
-  console.log(`Searching for: ${query} (Page ${page})`);
+  console.log(`Searching for SDS: ${query} (Page ${page})`);
   
   // Simulate network delay
   await new Promise(resolve => setTimeout(resolve, 800));
@@ -70,8 +114,11 @@ export const searchApi = async (query: string, page: number = 1, itemsPerPage: n
   // Filter items based on query (case insensitive)
   const filteredItems = query 
     ? allSampleItems.filter(item => 
-        item.name.toLowerCase().includes(query.toLowerCase()) || 
-        item.description.toLowerCase().includes(query.toLowerCase())
+        item.productName.toLowerCase().includes(query.toLowerCase()) || 
+        item.substanceName.toLowerCase().includes(query.toLowerCase()) ||
+        item.manufacturerName.toLowerCase().includes(query.toLowerCase()) ||
+        item.components.some(comp => comp.toLowerCase().includes(query.toLowerCase())) ||
+        item.casNo.includes(query)
       )
     : [...allSampleItems];
   

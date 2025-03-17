@@ -47,10 +47,10 @@ const Index = () => {
       <main className="flex-1 flex flex-col justify-center items-center px-6 py-12 animate-fade-in">
         <div className="max-w-4xl w-full text-center mb-12 space-y-4">
           <h1 className="text-4xl font-bold tracking-tight sm:text-6xl">
-            Find what you're looking for
+            Safety Data Sheet Search
           </h1>
           <p className="text-xl text-muted-foreground">
-            The simple way to search and discover information
+            Find detailed safety information for chemicals and substances
           </p>
         </div>
         
@@ -83,7 +83,7 @@ const Index = () => {
       <footer className="py-6 border-t">
         <div className="max-w-7xl mx-auto px-6 flex flex-col sm:flex-row justify-between items-center">
           <div className="text-sm text-muted-foreground">
-            © 2023 Search. All rights reserved.
+            © 2023 SDS Search. All rights reserved.
           </div>
           
           <div className="flex space-x-4 mt-4 sm:mt-0">
@@ -105,16 +105,16 @@ const Index = () => {
 
 const features = [
   {
-    title: "Simple & Fast",
-    description: "Get results instantly with our lightning-fast search technology."
+    title: "Comprehensive Database",
+    description: "Access thousands of Safety Data Sheets from leading manufacturers worldwide."
   },
   {
-    title: "Intelligent Suggestions",
-    description: "Our algorithms learn from your searches to provide better results over time."
+    title: "Detailed Information",
+    description: "View hazard information, composition, handling procedures, and more for each substance."
   },
   {
-    title: "Seamless Experience",
-    description: "Enjoy a beautiful, intuitive interface designed for clarity and ease of use."
+    title: "Regulatory Compliance",
+    description: "Stay compliant with OSHA, GHS, and other international safety standards."
   }
 ];
 

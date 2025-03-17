@@ -1,10 +1,11 @@
 
 import React from 'react';
-import { SearchItem, SearchResponse } from '@/services/searchService';
+import { SDSItem, SearchResponse } from '@/services/searchService';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
-import { ArrowDownToLine } from 'lucide-react';
+import { ArrowDownToLine, AlertTriangle, Info } from 'lucide-react';
+import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table';
 import {
   Pagination,
   PaginationContent,
@@ -24,22 +25,19 @@ interface SearchResultsProps {
 const SearchResults: React.FC<SearchResultsProps> = ({ searchData, isLoading, onPageChange }) => {
   if (isLoading) {
     return (
-      <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6 w-full animate-fade-in">
-        {[1, 2, 3, 4, 5, 6].map((i) => (
-          <Card key={i} className="overflow-hidden">
-            <div className="h-40 bg-muted">
-              <Skeleton className="h-full w-full" />
-            </div>
+      <div className="mt-8 w-full animate-fade-in">
+        {[1, 2, 3].map((i) => (
+          <Card key={i} className="mb-4">
             <CardHeader>
               <Skeleton className="h-6 w-3/4" />
             </CardHeader>
             <CardContent>
-              <Skeleton className="h-4 w-full mb-2" />
-              <Skeleton className="h-4 w-5/6" />
+              <div className="space-y-3">
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-5/6" />
+                <Skeleton className="h-4 w-2/3" />
+              </div>
             </CardContent>
-            <CardFooter>
-              <Skeleton className="h-8 w-28" />
-            </CardFooter>
           </Card>
         ))}
       </div>
@@ -145,30 +143,74 @@ const SearchResults: React.FC<SearchResultsProps> = ({ searchData, isLoading, on
         </div>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {items.map((item) => (
-          <Card key={item.id} className="overflow-hidden transition-all duration-300 hover:shadow-lg">
-            <div className="h-40 overflow-hidden">
-              <img 
-                src={item.imageUrl} 
-                alt={item.name}
-                className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-              />
+      <div className="space-y-4">
+        {items.map((item: SDSItem) => (
+          <Card key={item.id} className="overflow-hidden transition-all duration-300 hover:shadow-md">
+            <div className="grid md:grid-cols-[200px_1fr] gap-4">
+              <div className="hidden md:block h-full overflow-hidden">
+                <img 
+                  src={item.imageUrl} 
+                  alt={`${item.productName} SDS`}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="p-4">
+                <CardHeader className="p-0 pb-2">
+                  <CardTitle className="text-xl line-clamp-1">{item.productName}</CardTitle>
+                </CardHeader>
+                <CardContent className="p-0 space-y-3">
+                  <Table>
+                    <TableBody>
+                      <TableRow>
+                        <TableCell className="font-medium w-1/3">Substance</TableCell>
+                        <TableCell>{item.substanceName}</TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell className="font-medium">Manufacturer</TableCell>
+                        <TableCell>{item.manufacturerName}</TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell className="font-medium">CAS No.</TableCell>
+                        <TableCell>{item.casNo}</TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell className="font-medium">Revision Date</TableCell>
+                        <TableCell>{item.revisionDate}</TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell className="font-medium">Components</TableCell>
+                        <TableCell>{item.components.join(", ")}</TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell className="font-medium">GHS</TableCell>
+                        <TableCell>
+                          <div className="flex flex-wrap gap-2">
+                            {item.ghs.map((hazard, index) => (
+                              <span key={index} className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-800 border border-amber-200">
+                                <AlertTriangle className="mr-1 h-3 w-3" />
+                                {hazard}
+                              </span>
+                            ))}
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    </TableBody>
+                  </Table>
+                </CardContent>
+                <CardFooter className="p-0 pt-4 flex justify-between items-center">
+                  <div className="text-xs text-muted-foreground flex items-center">
+                    <Info className="h-3 w-3 mr-1" />
+                    SDS ID: {item.id}
+                  </div>
+                  <a href={item.fileUrl} target="_blank" rel="noopener noreferrer">
+                    <Button variant="outline" size="sm" className="gap-2">
+                      <ArrowDownToLine size={16} />
+                      Download SDS
+                    </Button>
+                  </a>
+                </CardFooter>
+              </div>
             </div>
-            <CardHeader>
-              <CardTitle className="text-lg line-clamp-1">{item.name}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground line-clamp-2">{item.description}</p>
-            </CardContent>
-            <CardFooter>
-              <a href={item.fileUrl} target="_blank" rel="noopener noreferrer">
-                <Button variant="outline" size="sm" className="gap-2">
-                  <ArrowDownToLine size={16} />
-                  Download
-                </Button>
-              </a>
-            </CardFooter>
           </Card>
         ))}
       </div>
