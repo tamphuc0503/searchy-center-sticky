@@ -5,19 +5,19 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate, Link } from 'react-router-dom';
 import { useToast } from '@/components/ui/use-toast';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import Header from '@/components/Header';
+import CompanyLogos from '@/components/CompanyLogos';
 
 const formSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 2 characters' }),
   email: z.string().email({ message: 'Please enter a valid email address' }),
-  password: z.string().min(8, { message: 'Password must be at least 8 characters' }),
-  confirmPassword: z.string(),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"],
+  termsAccepted: z.boolean().refine(value => value === true, {
+    message: "You must accept the Terms & Conditions and Privacy Policy",
+  }),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -31,8 +31,7 @@ const SignUp = () => {
     defaultValues: {
       name: '',
       email: '',
-      password: '',
-      confirmPassword: '',
+      termsAccepted: false,
     },
   });
 
@@ -65,7 +64,7 @@ const SignUp = () => {
       <div className="max-w-md mx-auto bg-white p-8 rounded-lg shadow-sm border">
         <div className="space-y-2 text-center mb-8">
           <h1 className="text-3xl font-bold">Sign Up</h1>
-          <p className="text-muted-foreground">Create an account to get started</p>
+          <p className="text-muted-foreground">30 days full access. No credit card required. No commitment to purchase.</p>
         </div>
         
         <Form {...form}>
@@ -100,28 +99,28 @@ const SignUp = () => {
             
             <FormField
               control={form.control}
-              name="password"
+              name="termsAccepted"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Password</FormLabel>
+                <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md p-4 border">
                   <FormControl>
-                    <Input type="password" placeholder="••••••••" {...field} />
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
                   </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            <FormField
-              control={form.control}
-              name="confirmPassword"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Confirm Password</FormLabel>
-                  <FormControl>
-                    <Input type="password" placeholder="••••••••" {...field} />
-                  </FormControl>
-                  <FormMessage />
+                  <div className="space-y-1 leading-none">
+                    <FormLabel>
+                      I have read and agree to the{" "}
+                      <Link to="/terms" className="text-primary hover:underline">
+                        Terms & Conditions
+                      </Link>{" "}
+                      and{" "}
+                      <Link to="/privacy" className="text-primary hover:underline">
+                        Privacy Policy
+                      </Link>
+                    </FormLabel>
+                    <FormMessage />
+                  </div>
                 </FormItem>
               )}
             />
@@ -129,6 +128,10 @@ const SignUp = () => {
             <Button type="submit" className="w-full mt-6">
               Sign Up
             </Button>
+            
+            <FormDescription className="text-center mt-4 text-sm text-amber-600 font-medium">
+              Your trial ends in 30 days and will not convert to a paid subscription unless you subscribe.
+            </FormDescription>
           </form>
         </Form>
         
@@ -141,6 +144,8 @@ const SignUp = () => {
           </p>
         </div>
       </div>
+      
+      <CompanyLogos />
     </div>
   );
 };
