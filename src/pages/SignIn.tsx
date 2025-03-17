@@ -42,7 +42,7 @@ const SignIn = () => {
         description: "You have been signed in.",
       });
       
-      navigate('/');
+      navigate('/portal');
     } catch (error) {
       toast({
         title: "Sign in failed",
