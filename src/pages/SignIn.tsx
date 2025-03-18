@@ -9,6 +9,8 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import Header from '@/components/Header';
+import { Separator } from '@/components/ui/separator';
+import { Github, Mail, KeyRound } from 'lucide-react';
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Please enter a valid email address' }),
@@ -52,6 +54,24 @@ const SignIn = () => {
     }
   };
 
+  const handleGoogleSignIn = () => {
+    // Logic for Google sign in
+    console.log('Sign in with Google');
+    toast({
+      title: "Google Sign-in",
+      description: "Redirecting to Google authentication...",
+    });
+  };
+
+  const handleSSOSignIn = () => {
+    // Logic for SSO sign in
+    console.log('Sign in with SSO');
+    toast({
+      title: "SSO Sign-in",
+      description: "Redirecting to SSO authentication...",
+    });
+  };
+
   return (
     <div className="min-h-screen pt-24 px-6 bg-slate-50">
       <Header />
@@ -59,6 +79,37 @@ const SignIn = () => {
         <div className="space-y-2 text-center mb-8">
           <h1 className="text-3xl font-bold">Sign In</h1>
           <p className="text-muted-foreground">Enter your credentials to sign in to your account</p>
+        </div>
+        
+        <div className="flex flex-col space-y-4 mb-6">
+          <Button 
+            variant="outline" 
+            className="w-full" 
+            onClick={handleGoogleSignIn}
+          >
+            <Mail className="mr-2 h-4 w-4" />
+            Sign in with Google
+          </Button>
+          
+          <Button 
+            variant="outline" 
+            className="w-full" 
+            onClick={handleSSOSignIn}
+          >
+            <KeyRound className="mr-2 h-4 w-4" />
+            Sign in with SSO
+          </Button>
+        </div>
+        
+        <div className="relative mb-6">
+          <div className="absolute inset-0 flex items-center">
+            <Separator className="w-full" />
+          </div>
+          <div className="relative flex justify-center">
+            <span className="bg-white px-2 text-sm text-muted-foreground">
+              Or continue with
+            </span>
+          </div>
         </div>
         
         <Form {...form}>
