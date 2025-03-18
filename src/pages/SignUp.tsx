@@ -61,87 +61,107 @@ const SignUp = () => {
   return (
     <div className="min-h-screen pt-24 px-6 bg-slate-50">
       <Header />
-      <div className="max-w-md mx-auto bg-white p-8 rounded-lg shadow-sm border">
-        <div className="space-y-2 text-center mb-8">
-          <h1 className="text-3xl font-bold">Sign Up</h1>
-          <p className="text-muted-foreground">30 days full access. No credit card required. No commitment to purchase.</p>
-        </div>
-        
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Full Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="John Doe" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+      <div className="max-w-6xl mx-auto">
+        <div className="grid md:grid-cols-2 gap-8 items-center">
+          {/* Left side - Sign Up Form */}
+          <div className="bg-white p-8 rounded-lg shadow-sm border">
+            <div className="space-y-2 text-center mb-8">
+              <h1 className="text-3xl font-bold">Sign Up</h1>
+              <p className="text-muted-foreground">30 days full access. No credit card required. No commitment to purchase.</p>
+            </div>
             
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input placeholder="your@email.com" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Full Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="John Doe" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <Input placeholder="your@email.com" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={form.control}
+                  name="termsAccepted"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md p-4 border">
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                      <div className="space-y-1 leading-none">
+                        <FormLabel>
+                          I have read and agree to the{" "}
+                          <Link to="/terms" className="text-primary hover:underline">
+                            Terms & Conditions
+                          </Link>{" "}
+                          and{" "}
+                          <Link to="/privacy" className="text-primary hover:underline">
+                            Privacy Policy
+                          </Link>
+                        </FormLabel>
+                        <FormMessage />
+                      </div>
+                    </FormItem>
+                  )}
+                />
+                
+                <Button type="submit" className="w-full mt-6">
+                  Sign Up
+                </Button>
+                
+                <FormDescription className="text-center mt-4 text-sm text-amber-600 font-medium">
+                  Your trial ends in 30 days and will not convert to a paid subscription unless you subscribe.
+                </FormDescription>
+              </form>
+            </Form>
             
-            <FormField
-              control={form.control}
-              name="termsAccepted"
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md p-4 border">
-                  <FormControl>
-                    <Checkbox
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                  <div className="space-y-1 leading-none">
-                    <FormLabel>
-                      I have read and agree to the{" "}
-                      <Link to="/terms" className="text-primary hover:underline">
-                        Terms & Conditions
-                      </Link>{" "}
-                      and{" "}
-                      <Link to="/privacy" className="text-primary hover:underline">
-                        Privacy Policy
-                      </Link>
-                    </FormLabel>
-                    <FormMessage />
-                  </div>
-                </FormItem>
-              )}
-            />
-            
-            <Button type="submit" className="w-full mt-6">
-              Sign Up
-            </Button>
-            
-            <FormDescription className="text-center mt-4 text-sm text-amber-600 font-medium">
-              Your trial ends in 30 days and will not convert to a paid subscription unless you subscribe.
-            </FormDescription>
-          </form>
-        </Form>
-        
-        <div className="mt-6 text-center text-sm">
-          <p className="text-muted-foreground">
-            Already have an account? {" "}
-            <Link to="/sign-in" className="text-primary hover:underline">
-              Sign in
-            </Link>
-          </p>
+            <div className="mt-6 text-center text-sm">
+              <p className="text-muted-foreground">
+                Already have an account? {" "}
+                <Link to="/sign-in" className="text-primary hover:underline">
+                  Sign in
+                </Link>
+              </p>
+            </div>
+          </div>
+          
+          {/* Right side - Robot Image */}
+          <div className="hidden md:block rounded-lg overflow-hidden shadow-md">
+            <div className="relative h-full w-full min-h-[500px] bg-gradient-to-br from-blue-50 to-indigo-100">
+              <img 
+                src="https://images.unsplash.com/photo-1485827404703-89b55fcc595e" 
+                alt="Robot with chemicals" 
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-6 text-white">
+                <h3 className="text-xl font-bold">Smart Chemical Management</h3>
+                <p>Our AI-powered solution helps you manage chemicals safely and efficiently</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       
