@@ -43,7 +43,7 @@ const Portal = () => {
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full">
-        <Sidebar variant="inset">
+        <Sidebar variant="inset" collapsible="icon">
           <SidebarHeader className="flex items-center justify-between p-4">
             <h2 className="text-xl font-bold">SDS Portal</h2>
             <SidebarTrigger />
