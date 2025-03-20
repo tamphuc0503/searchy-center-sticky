@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { MapPin, Search, Plus, FileText, ChevronRight, Star } from 'lucide-react';
+import { MapPin, Search, Plus, FileText, ChevronRight, Star, ChevronDown } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import LocationTree, { Location } from './LocationTree';
 import { 
@@ -189,24 +189,28 @@ const Locations = () => {
                 <Input placeholder="Search locations..." className="pl-8" />
               </div>
             </CardHeader>
-            <CollapsibleContent forceMount className="hidden md:block">
-              <CardContent>
-                <LocationTree 
-                  locations={dummyLocations} 
-                  onSelect={handleLocationSelect}
-                  selectedLocationId={selectedLocation?.id}
-                />
-              </CardContent>
-            </CollapsibleContent>
-            <CollapsibleContent open={isTreeOpen}>
-              <CardContent className="md:hidden">
-                <LocationTree 
-                  locations={dummyLocations} 
-                  onSelect={handleLocationSelect}
-                  selectedLocationId={selectedLocation?.id}
-                />
-              </CardContent>
-            </CollapsibleContent>
+            <Collapsible defaultOpen={true} className="hidden md:block">
+              <CollapsibleContent>
+                <CardContent>
+                  <LocationTree 
+                    locations={dummyLocations} 
+                    onSelect={handleLocationSelect}
+                    selectedLocationId={selectedLocation?.id}
+                  />
+                </CardContent>
+              </CollapsibleContent>
+            </Collapsible>
+            <Collapsible defaultOpen={isTreeOpen} onOpenChange={setIsTreeOpen} className="md:hidden">
+              <CollapsibleContent>
+                <CardContent>
+                  <LocationTree 
+                    locations={dummyLocations} 
+                    onSelect={handleLocationSelect}
+                    selectedLocationId={selectedLocation?.id}
+                  />
+                </CardContent>
+              </CollapsibleContent>
+            </Collapsible>
           </Card>
         </div>
 
