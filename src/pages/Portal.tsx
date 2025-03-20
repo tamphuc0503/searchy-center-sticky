@@ -122,33 +122,32 @@ const Portal = () => {
                   </SidebarMenuItem>
                   
                   <SidebarMenuItem className="flex flex-col">
-                    <div className="flex w-full">
-                      <SidebarMenuButton 
-                        isActive={activeSection === 'locations'}
-                        onClick={() => setActiveSection('locations')}
-                        tooltip="Locations"
-                        className="flex-1"
-                      >
-                        <MapPin />
-                        <span>Locations</span>
-                      </SidebarMenuButton>
-                      <CollapsibleTrigger
-                        onClick={() => setIsLocationsOpen(!isLocationsOpen)}
-                        className="flex h-10 w-10 items-center justify-center"
-                      >
-                        {isLocationsOpen ? (
-                          <ChevronDown className="h-4 w-4" />
-                        ) : (
-                          <ChevronRight className="h-4 w-4" />
-                        )}
-                      </CollapsibleTrigger>
-                    </div>
-                    <CollapsibleContent className="pl-8 ml-1">
-                      <LocationTree 
-                        locations={dummyLocations} 
-                        onSelect={handleLocationSelect} 
-                      />
-                    </CollapsibleContent>
+                    <Collapsible open={isLocationsOpen} onOpenChange={setIsLocationsOpen}>
+                      <div className="flex w-full">
+                        <SidebarMenuButton 
+                          isActive={activeSection === 'locations'}
+                          onClick={() => setActiveSection('locations')}
+                          tooltip="Locations"
+                          className="flex-1"
+                        >
+                          <MapPin />
+                          <span>Locations</span>
+                        </SidebarMenuButton>
+                        <CollapsibleTrigger className="flex h-10 w-10 items-center justify-center">
+                          {isLocationsOpen ? (
+                            <ChevronDown className="h-4 w-4" />
+                          ) : (
+                            <ChevronRight className="h-4 w-4" />
+                          )}
+                        </CollapsibleTrigger>
+                      </div>
+                      <CollapsibleContent className="pl-8 ml-1">
+                        <LocationTree 
+                          locations={dummyLocations} 
+                          onSelect={handleLocationSelect} 
+                        />
+                      </CollapsibleContent>
+                    </Collapsible>
                   </SidebarMenuItem>
                 </SidebarMenu>
               </SidebarGroupContent>

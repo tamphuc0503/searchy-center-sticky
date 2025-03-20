@@ -24,12 +24,11 @@ const LocationHierarchyPanel: React.FC<LocationHierarchyPanelProps> = ({
       <CardHeader className="pb-3">
         <div className="flex justify-between items-center">
           <CardTitle>Location Hierarchy</CardTitle>
-          <CollapsibleTrigger 
-            onClick={() => setIsTreeOpen(!isTreeOpen)} 
-            className="md:hidden"
-          >
-            {isTreeOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-          </CollapsibleTrigger>
+          <Collapsible open={isTreeOpen} onOpenChange={setIsTreeOpen} className="md:hidden">
+            <CollapsibleTrigger className="md:hidden">
+              {isTreeOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+            </CollapsibleTrigger>
+          </Collapsible>
         </div>
         <div className="relative">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -47,7 +46,7 @@ const LocationHierarchyPanel: React.FC<LocationHierarchyPanelProps> = ({
           </CardContent>
         </CollapsibleContent>
       </Collapsible>
-      <Collapsible defaultOpen={isTreeOpen} onOpenChange={setIsTreeOpen} className="md:hidden">
+      <Collapsible open={isTreeOpen} onOpenChange={setIsTreeOpen} className="md:hidden">
         <CollapsibleContent>
           <CardContent>
             <LocationTree 
