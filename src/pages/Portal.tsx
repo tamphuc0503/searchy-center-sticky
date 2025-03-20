@@ -17,7 +17,7 @@ import {
   SidebarInset,
   SidebarRail
 } from '@/components/ui/sidebar';
-import { LayoutDashboard, FileText, MapPin, LogOut, PanelLeftClose, User } from 'lucide-react';
+import { LayoutDashboard, FileText, MapPin, LogOut, ChevronDown, ChevronRight, User } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import Dashboard from '@/components/portal/Dashboard';
 import MySDSFiles from '@/components/portal/MySDSFiles';
@@ -25,9 +25,49 @@ import Locations from '@/components/portal/Locations';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
+import { 
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger 
+} from '@/components/ui/collapsible';
+import LocationTree, { Location } from '@/components/portal/LocationTree';
+
+// Dummy location data for sidebar
+const dummyLocations: Location[] = [
+  {
+    id: "loc1",
+    name: "Main Facility",
+    favorite: true,
+    parentLocationId: null,
+    children: [
+      {
+        id: "loc1-1",
+        name: "Research Building",
+        favorite: false,
+        parentLocationId: "loc1",
+        children: []
+      },
+      {
+        id: "loc1-2",
+        name: "Production Building",
+        favorite: false,
+        parentLocationId: "loc1",
+        children: []
+      }
+    ]
+  },
+  {
+    id: "loc2",
+    name: "Remote Facility",
+    favorite: false,
+    parentLocationId: null,
+    children: []
+  }
+];
 
 const Portal = () => {
   const [activeSection, setActiveSection] = React.useState<'dashboard' | 'files' | 'locations'>('dashboard');
+  const [isLocationsOpen, setIsLocationsOpen] = React.useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -38,6 +78,11 @@ const Portal = () => {
       description: "You have been signed out successfully.",
     });
     navigate('/');
+  };
+
+  const handleLocationSelect = (location: Location) => {
+    setActiveSection('locations');
+    // In a real app, you would pass the selected location ID to the Locations component
   };
 
   return (
@@ -76,15 +121,34 @@ const Portal = () => {
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                   
-                  <SidebarMenuItem>
-                    <SidebarMenuButton 
-                      isActive={activeSection === 'locations'}
-                      onClick={() => setActiveSection('locations')}
-                      tooltip="Locations"
-                    >
-                      <MapPin />
-                      <span>Locations</span>
-                    </SidebarMenuButton>
+                  <SidebarMenuItem className="flex flex-col">
+                    <div className="flex w-full">
+                      <SidebarMenuButton 
+                        isActive={activeSection === 'locations'}
+                        onClick={() => setActiveSection('locations')}
+                        tooltip="Locations"
+                        className="flex-1"
+                      >
+                        <MapPin />
+                        <span>Locations</span>
+                      </SidebarMenuButton>
+                      <CollapsibleTrigger
+                        onClick={() => setIsLocationsOpen(!isLocationsOpen)}
+                        className="flex h-10 w-10 items-center justify-center"
+                      >
+                        {isLocationsOpen ? (
+                          <ChevronDown className="h-4 w-4" />
+                        ) : (
+                          <ChevronRight className="h-4 w-4" />
+                        )}
+                      </CollapsibleTrigger>
+                    </div>
+                    <CollapsibleContent className="pl-8 ml-1">
+                      <LocationTree 
+                        locations={dummyLocations} 
+                        onSelect={handleLocationSelect} 
+                      />
+                    </CollapsibleContent>
                   </SidebarMenuItem>
                 </SidebarMenu>
               </SidebarGroupContent>
