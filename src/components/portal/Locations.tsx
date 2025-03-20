@@ -1,21 +1,17 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Plus } from 'lucide-react';
 import { Location } from './LocationTree';
-import LocationHierarchyPanel from './LocationHierarchyPanel';
 import LocationsTable from './LocationsTable';
-import { dummyLocations, sampleLocationsData } from './LocationsData';
+import { sampleLocationsData } from './LocationsData';
 
-const Locations = () => {
-  const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
+interface LocationsProps {
+  selectedLocation?: Location | null;
+}
 
-  const handleLocationSelect = (location: Location) => {
-    setSelectedLocation(location);
-    // In a real app, here you would fetch SDS files for the selected location
-  };
-
+const Locations: React.FC<LocationsProps> = ({ selectedLocation }) => {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -29,35 +25,24 @@ const Locations = () => {
         </Button>
       </div>
       
-      <div className="grid grid-cols-12 gap-6">
-        {/* Location Tree Panel */}
-        <div className="col-span-12 md:col-span-4 lg:col-span-3">
-          <LocationHierarchyPanel 
-            locations={dummyLocations}
-            selectedLocationId={selectedLocation?.id}
-            onLocationSelect={handleLocationSelect}
-          />
-        </div>
-
+      <div>
         {/* Locations Table */}
-        <div className="col-span-12 md:col-span-8 lg:col-span-9">
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle>
-                {selectedLocation 
-                  ? `Location: ${selectedLocation.name}`
-                  : "All Locations"
-                }
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <LocationsTable 
-                locations={sampleLocationsData} 
-                title="" 
-              />
-            </CardContent>
-          </Card>
-        </div>
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle>
+              {selectedLocation 
+                ? `Location: ${selectedLocation.name}`
+                : "All Locations"
+              }
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <LocationsTable 
+              locations={sampleLocationsData} 
+              title="" 
+            />
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

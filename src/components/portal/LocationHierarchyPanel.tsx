@@ -5,19 +5,46 @@ import { Search, ChevronDown, ChevronRight } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import LocationTree, { Location } from './LocationTree';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { cn } from "@/lib/utils";
 
 interface LocationHierarchyPanelProps {
   locations: Location[];
   selectedLocationId?: string;
   onLocationSelect: (location: Location) => void;
+  variant?: 'default' | 'sidebar';
 }
 
 const LocationHierarchyPanel: React.FC<LocationHierarchyPanelProps> = ({ 
   locations, 
   selectedLocationId,
-  onLocationSelect
+  onLocationSelect,
+  variant = 'default'
 }) => {
   const [isTreeOpen, setIsTreeOpen] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  if (variant === 'sidebar') {
+    return (
+      <div className="space-y-2">
+        <div className="relative">
+          <Search className="absolute left-2 top-2 h-4 w-4 text-muted-foreground" />
+          <Input 
+            placeholder="Search locations..." 
+            className="pl-8 h-8 text-xs" 
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
+        <div className="text-xs">
+          <LocationTree 
+            locations={locations} 
+            onSelect={onLocationSelect}
+            selectedLocationId={selectedLocationId}
+          />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <Card>
@@ -32,7 +59,12 @@ const LocationHierarchyPanel: React.FC<LocationHierarchyPanelProps> = ({
         </div>
         <div className="relative">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input placeholder="Search locations..." className="pl-8" />
+          <Input 
+            placeholder="Search locations..." 
+            className="pl-8" 
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
         </div>
       </CardHeader>
       <Collapsible defaultOpen={true} className="hidden md:block">

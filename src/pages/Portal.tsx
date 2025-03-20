@@ -30,44 +30,14 @@ import {
   CollapsibleContent,
   CollapsibleTrigger 
 } from '@/components/ui/collapsible';
-import LocationTree, { Location } from '@/components/portal/LocationTree';
-
-// Dummy location data for sidebar
-const dummyLocations: Location[] = [
-  {
-    id: "loc1",
-    name: "Main Facility",
-    favorite: true,
-    parentLocationId: null,
-    children: [
-      {
-        id: "loc1-1",
-        name: "Research Building",
-        favorite: false,
-        parentLocationId: "loc1",
-        children: []
-      },
-      {
-        id: "loc1-2",
-        name: "Production Building",
-        favorite: false,
-        parentLocationId: "loc1",
-        children: []
-      }
-    ]
-  },
-  {
-    id: "loc2",
-    name: "Remote Facility",
-    favorite: false,
-    parentLocationId: null,
-    children: []
-  }
-];
+import LocationHierarchyPanel from '@/components/portal/LocationHierarchyPanel';
+import { dummyLocations } from '@/components/portal/LocationsData';
+import { Location } from '@/components/portal/LocationTree';
 
 const Portal = () => {
   const [activeSection, setActiveSection] = React.useState<'dashboard' | 'files' | 'locations'>('dashboard');
   const [isLocationsOpen, setIsLocationsOpen] = React.useState(false);
+  const [selectedLocation, setSelectedLocation] = React.useState<Location | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -81,6 +51,7 @@ const Portal = () => {
   };
 
   const handleLocationSelect = (location: Location) => {
+    setSelectedLocation(location);
     setActiveSection('locations');
     // In a real app, you would pass the selected location ID to the Locations component
   };
@@ -141,11 +112,15 @@ const Portal = () => {
                           )}
                         </CollapsibleTrigger>
                       </div>
-                      <CollapsibleContent className="pl-8 ml-1">
-                        <LocationTree 
-                          locations={dummyLocations} 
-                          onSelect={handleLocationSelect} 
-                        />
+                      <CollapsibleContent>
+                        <div className="px-3 py-2">
+                          <LocationHierarchyPanel 
+                            locations={dummyLocations}
+                            selectedLocationId={selectedLocation?.id}
+                            onLocationSelect={handleLocationSelect}
+                            variant="sidebar"
+                          />
+                        </div>
                       </CollapsibleContent>
                     </Collapsible>
                   </SidebarMenuItem>
@@ -184,7 +159,7 @@ const Portal = () => {
         <SidebarInset className="p-6">
           {activeSection === 'dashboard' && <Dashboard />}
           {activeSection === 'files' && <MySDSFiles />}
-          {activeSection === 'locations' && <Locations />}
+          {activeSection === 'locations' && <Locations selectedLocation={selectedLocation} />}
         </SidebarInset>
       </div>
     </SidebarProvider>
