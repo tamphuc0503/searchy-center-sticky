@@ -3,12 +3,18 @@ import React from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { FileText, MapPin, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Location } from './LocationTree';
 
-interface LocationData {
-  id: number;
+// Define a unified type that can handle both the old location data format and the new Location type
+export interface LocationData {
+  id: string | number;
   name: string;
-  address: string;
-  sdsCount: number;
+  address?: string;
+  sdsCount?: number;
+  // Optional Location properties
+  favorite?: boolean;
+  parentLocationId?: string | null;
+  children?: Location[];
 }
 
 interface LocationsTableProps {
@@ -38,11 +44,11 @@ const LocationsTable: React.FC<LocationsTableProps> = ({ locations, title }) => 
                   {location.name}
                 </div>
               </TableCell>
-              <TableCell>{location.address}</TableCell>
+              <TableCell>{location.address || 'N/A'}</TableCell>
               <TableCell>
                 <div className="flex items-center gap-2">
                   <FileText className="h-4 w-4 text-muted-foreground" />
-                  {location.sdsCount} files
+                  {location.sdsCount || 0} files
                 </div>
               </TableCell>
               <TableCell className="text-right">

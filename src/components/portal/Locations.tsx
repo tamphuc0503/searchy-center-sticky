@@ -4,8 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Plus } from 'lucide-react';
 import { Location } from './LocationTree';
-import LocationsTable from './LocationsTable';
-import { sampleLocationsData } from './LocationsData';
+import LocationsTable, { LocationData } from './LocationsTable';
+import { sampleLocationsData, convertLocationToTableData } from './LocationsData';
 import AddLocationDialog from './AddLocationDialog';
 import { useToast } from '@/components/ui/use-toast';
 
@@ -15,19 +15,31 @@ interface LocationsProps {
 
 const Locations: React.FC<LocationsProps> = ({ selectedLocation }) => {
   const [isAddLocationDialogOpen, setIsAddLocationDialogOpen] = useState(false);
-  const [locations, setLocations] = useState(sampleLocationsData);
+  const [locations, setLocations] = useState<LocationData[]>(sampleLocationsData);
+  const [hierarchyLocations, setHierarchyLocations] = useState<Location[]>([]);
   const { toast } = useToast();
 
   const handleLocationCreated = (newLocation: Location) => {
-    // In a real app, you would make an API call to save the location
-    // For now, we'll just update the local state
-    setLocations(prevLocations => [...prevLocations, newLocation]);
+    // Convert the new Location to LocationData format before adding
+    const newLocationData = convertLocationToTableData(newLocation);
+    
+    // Update the table data
+    setLocations(prevLocations => [...prevLocations, newLocationData]);
+    
+    // Also update the hierarchy data if needed
+    setHierarchyLocations(prevLocations => [...prevLocations, newLocation]);
     
     toast({
       title: "Location added",
       description: `${newLocation.name} has been added to your locations.`,
     });
   };
+
+  // Prepare display locations for the table
+  const displayLocations = selectedLocation 
+    ? [convertLocationToTableData(selectedLocation), 
+       ...(selectedLocation.children.map(convertLocationToTableData))]
+    : locations;
 
   return (
     <div className="space-y-6">
@@ -58,7 +70,7 @@ const Locations: React.FC<LocationsProps> = ({ selectedLocation }) => {
           </CardHeader>
           <CardContent>
             <LocationsTable 
-              locations={selectedLocation ? [selectedLocation, ...selectedLocation.children] : locations} 
+              locations={displayLocations} 
               title="" 
             />
           </CardContent>
@@ -69,7 +81,7 @@ const Locations: React.FC<LocationsProps> = ({ selectedLocation }) => {
       <AddLocationDialog 
         isOpen={isAddLocationDialogOpen}
         onOpenChange={setIsAddLocationDialogOpen}
-        locations={locations}
+        locations={hierarchyLocations.length > 0 ? hierarchyLocations : []}
         onLocationCreated={handleLocationCreated}
       />
     </div>

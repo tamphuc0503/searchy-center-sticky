@@ -1,5 +1,5 @@
-
 import { Location } from './LocationTree';
+import { LocationData } from './LocationsTable';
 
 // Dummy location data with 4 sub-levels
 export const dummyLocations: Location[] = [
@@ -126,11 +126,20 @@ export const dummyLocations: Location[] = [
   }
 ];
 
-// Sample flattened locations data for the table
-export const sampleLocationsData = [
-  { id: 1, name: 'Main Laboratory', address: '123 Science Blvd, Floor 2', sdsCount: 45 },
-  { id: 2, name: 'Storage Room A', address: 'Building 3, Basement', sdsCount: 28 },
-  { id: 3, name: 'Production Line', address: 'Factory Building, East Wing', sdsCount: 37 },
-  { id: 4, name: 'Research Lab', address: '555 Innovation Drive, Suite 201', sdsCount: 15 },
-  { id: 5, name: 'Warehouse', address: '78 Industrial Parkway', sdsCount: 7 },
+// Sample flattened locations data for the table with address and sdsCount
+export const sampleLocationsData: LocationData[] = [
+  { id: "1", name: 'Main Laboratory', address: '123 Science Blvd, Floor 2', sdsCount: 45 },
+  { id: "2", name: 'Storage Room A', address: 'Building 3, Basement', sdsCount: 28 },
+  { id: "3", name: 'Production Line', address: 'Factory Building, East Wing', sdsCount: 37 },
+  { id: "4", name: 'Research Lab', address: '555 Innovation Drive, Suite 201', sdsCount: 15 },
+  { id: "5", name: 'Warehouse', address: '78 Industrial Parkway', sdsCount: 7 },
 ];
+
+// Helper function to adapt Location objects to LocationData format for the table
+export const convertLocationToTableData = (location: Location): LocationData => {
+  return {
+    ...location,
+    address: "No address specified", // Default address
+    sdsCount: 0 // Default SDS count
+  };
+};
