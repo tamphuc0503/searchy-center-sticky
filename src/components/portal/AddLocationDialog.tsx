@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose, DialogDescription } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Location } from './LocationTree';
@@ -12,6 +12,7 @@ import { useToast } from '@/components/ui/use-toast';
 
 const formSchema = z.object({
   name: z.string().min(1, { message: "Location name is required" }),
+  address: z.string().optional(),
 });
 
 interface AddLocationDialogProps {
@@ -34,6 +35,7 @@ const AddLocationDialog: React.FC<AddLocationDialogProps> = ({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: '',
+      address: '',
     },
   });
 
@@ -45,6 +47,8 @@ const AddLocationDialog: React.FC<AddLocationDialogProps> = ({
       favorite: false,
       parentLocationId: currentLocation?.id || null,
       children: [],
+      address: values.address || undefined,
+      sdsCount: 0, // Initialize with 0 SDS files
     };
     
     onLocationCreated(newLocation);
@@ -68,6 +72,9 @@ const AddLocationDialog: React.FC<AddLocationDialogProps> = ({
               ? `Add New Location under ${currentLocation.name}` 
               : "Add New Location"}
           </DialogTitle>
+          <DialogDescription>
+            Create a new location for organizing your SDS files.
+          </DialogDescription>
         </DialogHeader>
         
         <Form {...form}>
@@ -80,6 +87,20 @@ const AddLocationDialog: React.FC<AddLocationDialogProps> = ({
                   <FormLabel>Location Name</FormLabel>
                   <FormControl>
                     <Input placeholder="Enter location name" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            <FormField
+              control={form.control}
+              name="address"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Address (Optional)</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter location address" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

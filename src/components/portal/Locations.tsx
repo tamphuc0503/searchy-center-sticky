@@ -1,11 +1,10 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Plus } from 'lucide-react';
 import { Location } from './LocationTree';
 import LocationsTable, { LocationData } from './LocationsTable';
-import { sampleLocationsData, convertLocationToTableData } from './LocationsData';
+import { sampleLocationsData, convertLocationToTableData, dummyLocations } from './LocationsData';
 import AddLocationDialog from './AddLocationDialog';
 import { useToast } from '@/components/ui/use-toast';
 import { 
@@ -24,7 +23,7 @@ interface LocationsProps {
 const Locations: React.FC<LocationsProps> = ({ selectedLocation }) => {
   const [isAddLocationDialogOpen, setIsAddLocationDialogOpen] = useState(false);
   const [locations, setLocations] = useState<LocationData[]>(sampleLocationsData);
-  const [hierarchyLocations, setHierarchyLocations] = useState<Location[]>([]);
+  const [hierarchyLocations, setHierarchyLocations] = useState<Location[]>(dummyLocations);
   const { toast } = useToast();
 
   const handleLocationCreated = (newLocation: Location) => {
@@ -32,7 +31,32 @@ const Locations: React.FC<LocationsProps> = ({ selectedLocation }) => {
     
     setLocations(prevLocations => [...prevLocations, newLocationData]);
     
-    setHierarchyLocations(prevLocations => [...prevLocations, newLocation]);
+    if (newLocation.parentLocationId) {
+      setHierarchyLocations(prevLocations => {
+        const updatedLocations = [...prevLocations];
+        
+        const findAndUpdateParent = (locations: Location[]): boolean => {
+          for (let i = 0; i < locations.length; i++) {
+            if (locations[i].id === newLocation.parentLocationId) {
+              locations[i].children = [...locations[i].children, newLocation];
+              return true;
+            }
+            
+            if (locations[i].children.length > 0) {
+              if (findAndUpdateParent(locations[i].children)) {
+                return true;
+              }
+            }
+          }
+          return false;
+        };
+        
+        findAndUpdateParent(updatedLocations);
+        return updatedLocations;
+      });
+    } else {
+      setHierarchyLocations(prevLocations => [...prevLocations, newLocation]);
+    }
     
     toast({
       title: "Location added",
@@ -45,23 +69,31 @@ const Locations: React.FC<LocationsProps> = ({ selectedLocation }) => {
        ...(selectedLocation.children.map(convertLocationToTableData))]
     : locations;
 
-  // Function to find parent location path
   const getParentPath = (locationId: string | null, allLocations: Location[]): Location[] => {
     if (!locationId) return [];
     
-    // Find direct parent
-    const parent = allLocations.find(loc => loc.id === locationId);
+    const parent = findLocationById(locationId, allLocations);
     if (!parent) return [];
     
-    // If this parent has a parent, recursively get that path
     if (parent.parentLocationId) {
       return [...getParentPath(parent.parentLocationId, allLocations), parent];
     }
     
     return [parent];
   };
-  
-  // Get the breadcrumb path if a location is selected
+
+  const findLocationById = (id: string, locations: Location[]): Location | null => {
+    for (const loc of locations) {
+      if (loc.id === id) return loc;
+      
+      if (loc.children && loc.children.length > 0) {
+        const foundInChildren = findLocationById(id, loc.children);
+        if (foundInChildren) return foundInChildren;
+      }
+    }
+    return null;
+  };
+
   const breadcrumbPath = selectedLocation 
     ? getParentPath(selectedLocation.parentLocationId, hierarchyLocations)
     : [];
@@ -113,7 +145,7 @@ const Locations: React.FC<LocationsProps> = ({ selectedLocation }) => {
       <AddLocationDialog 
         isOpen={isAddLocationDialogOpen}
         onOpenChange={setIsAddLocationDialogOpen}
-        locations={hierarchyLocations.length > 0 ? hierarchyLocations : []}
+        locations={hierarchyLocations}
         onLocationCreated={handleLocationCreated}
         currentLocation={selectedLocation}
       />

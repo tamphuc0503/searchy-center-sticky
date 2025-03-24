@@ -1,3 +1,4 @@
+
 import { Location } from './LocationTree';
 import { LocationData } from './LocationsTable';
 
@@ -139,7 +140,7 @@ export const sampleLocationsData: LocationData[] = [
 export const convertLocationToTableData = (location: Location): LocationData => {
   return {
     ...location,
-    address: "No address specified", // Default address
-    sdsCount: 0 // Default SDS count
+    address: location.address || "No address specified", // Use location address if available
+    sdsCount: location.sdsCount || 0 // Use location sdsCount if available
   };
 };
