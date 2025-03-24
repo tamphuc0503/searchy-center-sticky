@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { ChevronRight, ChevronDown, MapPin, Star } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -9,6 +8,8 @@ export interface Location {
   favorite: boolean;
   parentLocationId: string | null;
   children: Location[];
+  address?: string;
+  sdsCount?: number;
 }
 
 interface LocationTreeProps {
