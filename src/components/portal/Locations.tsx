@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -13,7 +14,8 @@ import {
   BreadcrumbItem,
   BreadcrumbLink,
   BreadcrumbSeparator,
-  BreadcrumbPage
+  BreadcrumbPage,
+  BreadcrumbEllipsis
 } from '@/components/ui/breadcrumb';
 
 interface LocationsProps {
@@ -97,27 +99,55 @@ const Locations: React.FC<LocationsProps> = ({ selectedLocation }) => {
     ? getParentPath(selectedLocation.parentLocationId, hierarchyLocations)
     : [];
 
+  // Function to get the breadcrumb items with ellipsis for long paths
+  const renderBreadcrumbItems = () => {
+    if (breadcrumbPath.length <= 2) {
+      // If there are 2 or fewer items in the path, render all
+      return breadcrumbPath.map((location, index) => (
+        <React.Fragment key={location.id}>
+          <BreadcrumbItem>
+            <BreadcrumbLink href={`/portal?location=${location.id}`}>
+              {location.name}
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+        </React.Fragment>
+      ));
+    } else {
+      // If there are more than 2 items, use ellipsis and only show the last 2
+      return (
+        <>
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/portal">
+              Locations
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbEllipsis />
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          {breadcrumbPath.slice(-2).map((location, index) => (
+            <React.Fragment key={location.id}>
+              <BreadcrumbItem>
+                <BreadcrumbLink href={`/portal?location=${location.id}`}>
+                  {location.name}
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+            </React.Fragment>
+          ))}
+        </>
+      );
+    }
+  };
+
   return (
     <div className="space-y-6">
       {selectedLocation && (
         <Breadcrumb className="mb-4">
           <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink href="/portal">Locations</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            
-            {breadcrumbPath.map((location, index) => (
-              <React.Fragment key={location.id}>
-                <BreadcrumbItem>
-                  <BreadcrumbLink href={`/portal?location=${location.id}`}>
-                    {location.name}
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator />
-              </React.Fragment>
-            ))}
-            
+            {renderBreadcrumbItems()}
             <BreadcrumbItem>
               <BreadcrumbPage>{selectedLocation.name}</BreadcrumbPage>
             </BreadcrumbItem>
