@@ -65,8 +65,7 @@ const Locations: React.FC<LocationsProps> = ({ selectedLocation }) => {
   };
 
   const displayLocations = selectedLocation 
-    ? [convertLocationToTableData(selectedLocation), 
-       ...(selectedLocation.children.map(convertLocationToTableData))]
+    ? selectedLocation.children.map(convertLocationToTableData)
     : locations;
 
   const getParentPath = (locationId: string | null, allLocations: Location[]): Location[] => {
@@ -137,7 +136,7 @@ const Locations: React.FC<LocationsProps> = ({ selectedLocation }) => {
           </Button>
           <LocationsTable 
             locations={displayLocations} 
-            title="" 
+            title={selectedLocation ? selectedLocation.name : ""} 
           />
         </CardContent>
       </Card>
