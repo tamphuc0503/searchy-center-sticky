@@ -13,11 +13,12 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
+  SidebarMenuTrigger,
   SidebarTrigger,
   SidebarInset,
   SidebarRail
 } from '@/components/ui/sidebar';
-import { LayoutDashboard, FileText, MapPin, LogOut, ChevronDown, ChevronRight, User } from 'lucide-react';
+import { LayoutDashboard, FileText, MapPin, LogOut, ChevronDown, ChevronRight, User, UserCog } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import Dashboard from '@/components/portal/Dashboard';
 import MySDSFiles from '@/components/portal/MySDSFiles';
@@ -33,9 +34,11 @@ import {
 import LocationHierarchyPanel from '@/components/portal/LocationHierarchyPanel';
 import { dummyLocations } from '@/components/portal/LocationsData';
 import { Location } from '@/components/portal/LocationTree';
+import UserSettings from '@/components/portal/UserSettings';
+import LocationDetail from '@/components/portal/LocationDetail';
 
 const Portal = () => {
-  const [activeSection, setActiveSection] = React.useState<'dashboard' | 'files' | 'locations'>('dashboard');
+  const [activeSection, setActiveSection] = React.useState<'dashboard' | 'files' | 'locations' | 'settings' | 'locationDetail'>('dashboard');
   const [isLocationsOpen, setIsLocationsOpen] = React.useState(false);
   const [selectedLocation, setSelectedLocation] = React.useState<Location | null>(null);
   const navigate = useNavigate();
@@ -54,6 +57,15 @@ const Portal = () => {
     setSelectedLocation(location);
     setActiveSection('locations');
     // In a real app, you would pass the selected location ID to the Locations component
+  };
+  
+  const handleLocationClick = (location: Location) => {
+    setSelectedLocation(location);
+    setActiveSection('locationDetail');
+  };
+  
+  const handleUserSettingsClick = () => {
+    setActiveSection('settings');
   };
 
   return (
@@ -96,7 +108,7 @@ const Portal = () => {
                     <Collapsible open={isLocationsOpen} onOpenChange={setIsLocationsOpen}>
                       <div className="flex w-full">
                         <SidebarMenuButton 
-                          isActive={activeSection === 'locations'}
+                          isActive={activeSection === 'locations' || activeSection === 'locationDetail'}
                           onClick={() => setActiveSection('locations')}
                           tooltip="Locations"
                           className="flex-1"
@@ -113,7 +125,7 @@ const Portal = () => {
                         </CollapsibleTrigger>
                       </div>
                       <CollapsibleContent>
-                        <div className="px-3 py-2">
+                        <div className="px-3 py-2 max-h-[300px] overflow-y-auto">
                           <LocationHierarchyPanel 
                             locations={dummyLocations}
                             selectedLocationId={selectedLocation?.id}
@@ -131,7 +143,7 @@ const Portal = () => {
           
           <SidebarFooter className="p-4 space-y-4">
             {/* User Profile Section */}
-            <div className="flex items-center space-x-3 px-2 py-2 rounded-md">
+            <div className="flex items-center space-x-3 px-2 py-2 rounded-md hover:bg-sidebar-accent cursor-pointer" onClick={handleUserSettingsClick}>
               <Avatar>
                 <AvatarImage src="https://github.com/shadcn.png" alt="User" />
                 <AvatarFallback>JD</AvatarFallback>
@@ -140,6 +152,7 @@ const Portal = () => {
                 <p className="text-sm font-medium">John Doe</p>
                 <p className="text-xs text-muted-foreground">john.doe@example.com</p>
               </div>
+              <UserCog className="ml-auto h-4 w-4 text-muted-foreground" />
             </div>
             <Separator />
             <Button 
@@ -159,7 +172,9 @@ const Portal = () => {
         <SidebarInset className="p-6">
           {activeSection === 'dashboard' && <Dashboard />}
           {activeSection === 'files' && <MySDSFiles />}
-          {activeSection === 'locations' && <Locations selectedLocation={selectedLocation} />}
+          {activeSection === 'locations' && <Locations selectedLocation={selectedLocation} onLocationClick={handleLocationClick} />}
+          {activeSection === 'settings' && <UserSettings />}
+          {activeSection === 'locationDetail' && selectedLocation && <LocationDetail location={selectedLocation} />}
         </SidebarInset>
       </div>
     </SidebarProvider>

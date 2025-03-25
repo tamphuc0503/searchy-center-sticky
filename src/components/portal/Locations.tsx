@@ -20,9 +20,10 @@ import {
 
 interface LocationsProps {
   selectedLocation?: Location | null;
+  onLocationClick?: (location: Location) => void;
 }
 
-const Locations: React.FC<LocationsProps> = ({ selectedLocation }) => {
+const Locations: React.FC<LocationsProps> = ({ selectedLocation, onLocationClick }) => {
   const [isAddLocationDialogOpen, setIsAddLocationDialogOpen] = useState(false);
   const [locations, setLocations] = useState<LocationData[]>(sampleLocationsData);
   const [hierarchyLocations, setHierarchyLocations] = useState<Location[]>(dummyLocations);
@@ -69,6 +70,27 @@ const Locations: React.FC<LocationsProps> = ({ selectedLocation }) => {
   const displayLocations = selectedLocation 
     ? selectedLocation.children.map(convertLocationToTableData)
     : locations;
+    
+  const handleLocationClick = (locationData: LocationData) => {
+    if (!onLocationClick) return;
+    
+    const findLocation = (locations: Location[], id: string): Location | null => {
+      for (const location of locations) {
+        if (location.id === id) return location;
+        
+        if (location.children.length > 0) {
+          const found = findLocation(location.children, id);
+          if (found) return found;
+        }
+      }
+      return null;
+    };
+    
+    const location = findLocation(hierarchyLocations, locationData.id);
+    if (location) {
+      onLocationClick(location);
+    }
+  };
 
   const getParentPath = (locationId: string | null, allLocations: Location[]): Location[] => {
     if (!locationId) return [];
@@ -167,6 +189,7 @@ const Locations: React.FC<LocationsProps> = ({ selectedLocation }) => {
           <LocationsTable 
             locations={displayLocations} 
             title={selectedLocation ? selectedLocation.name : ""} 
+            onLocationClick={handleLocationClick}
           />
         </CardContent>
       </Card>

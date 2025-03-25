@@ -5,6 +5,7 @@ import { Search, ChevronDown, ChevronRight } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import LocationTree, { Location } from './LocationTree';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 
 interface LocationHierarchyPanelProps {
@@ -35,13 +36,15 @@ const LocationHierarchyPanel: React.FC<LocationHierarchyPanelProps> = ({
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-        <div className="text-xs">
-          <LocationTree 
-            locations={locations} 
-            onSelect={onLocationSelect}
-            selectedLocationId={selectedLocationId}
-          />
-        </div>
+        <ScrollArea className="h-[250px]">
+          <div className="text-xs pr-3">
+            <LocationTree 
+              locations={locations} 
+              onSelect={onLocationSelect}
+              selectedLocationId={selectedLocationId}
+            />
+          </div>
+        </ScrollArea>
       </div>
     );
   }
@@ -70,22 +73,26 @@ const LocationHierarchyPanel: React.FC<LocationHierarchyPanelProps> = ({
       <Collapsible defaultOpen={true} className="hidden md:block">
         <CollapsibleContent>
           <CardContent>
-            <LocationTree 
-              locations={locations} 
-              onSelect={onLocationSelect}
-              selectedLocationId={selectedLocationId}
-            />
+            <ScrollArea className="h-[350px]">
+              <LocationTree 
+                locations={locations} 
+                onSelect={onLocationSelect}
+                selectedLocationId={selectedLocationId}
+              />
+            </ScrollArea>
           </CardContent>
         </CollapsibleContent>
       </Collapsible>
       <Collapsible open={isTreeOpen} onOpenChange={setIsTreeOpen} className="md:hidden">
         <CollapsibleContent>
           <CardContent>
-            <LocationTree 
-              locations={locations} 
-              onSelect={onLocationSelect}
-              selectedLocationId={selectedLocationId}
-            />
+            <ScrollArea className="h-[300px]">
+              <LocationTree 
+                locations={locations} 
+                onSelect={onLocationSelect}
+                selectedLocationId={selectedLocationId}
+              />
+            </ScrollArea>
           </CardContent>
         </CollapsibleContent>
       </Collapsible>
