@@ -36,15 +36,17 @@ const LocationHierarchyPanel: React.FC<LocationHierarchyPanelProps> = ({
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-        <ScrollArea className="h-[250px]" style={{ overflow: 'auto' }}>
-          <div className="text-xs pr-3" style={{ minWidth: '350px', overflowX: 'auto' }}>
-            <LocationTree 
-              locations={locations} 
-              onSelect={onLocationSelect}
-              selectedLocationId={selectedLocationId}
-            />
+        <div className="h-[250px] overflow-y-hidden">
+          <div className="overflow-x-auto pb-2">
+            <div className="min-w-[350px]">
+              <LocationTree 
+                locations={locations} 
+                onSelect={onLocationSelect}
+                selectedLocationId={selectedLocationId}
+              />
+            </div>
           </div>
-        </ScrollArea>
+        </div>
       </div>
     );
   }
@@ -73,26 +75,34 @@ const LocationHierarchyPanel: React.FC<LocationHierarchyPanelProps> = ({
       <Collapsible defaultOpen={true} className="hidden md:block">
         <CollapsibleContent>
           <CardContent>
-            <ScrollArea className="h-[350px]">
-              <LocationTree 
-                locations={locations} 
-                onSelect={onLocationSelect}
-                selectedLocationId={selectedLocationId}
-              />
-            </ScrollArea>
+            <div className="h-[350px] overflow-y-hidden">
+              <div className="overflow-x-auto pb-2">
+                <div className="min-w-[400px]">
+                  <LocationTree 
+                    locations={locations} 
+                    onSelect={onLocationSelect}
+                    selectedLocationId={selectedLocationId}
+                  />
+                </div>
+              </div>
+            </div>
           </CardContent>
         </CollapsibleContent>
       </Collapsible>
       <Collapsible open={isTreeOpen} onOpenChange={setIsTreeOpen} className="md:hidden">
         <CollapsibleContent>
           <CardContent>
-            <ScrollArea className="h-[300px]">
-              <LocationTree 
-                locations={locations} 
-                onSelect={onLocationSelect}
-                selectedLocationId={selectedLocationId}
-              />
-            </ScrollArea>
+            <div className="h-[300px] overflow-y-hidden">
+              <div className="overflow-x-auto pb-2">
+                <div className="min-w-[400px]">
+                  <LocationTree 
+                    locations={locations} 
+                    onSelect={onLocationSelect}
+                    selectedLocationId={selectedLocationId}
+                  />
+                </div>
+              </div>
+            </div>
           </CardContent>
         </CollapsibleContent>
       </Collapsible>
