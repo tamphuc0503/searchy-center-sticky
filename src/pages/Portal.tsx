@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
@@ -13,7 +12,6 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
-  SidebarMenuTrigger,
   SidebarTrigger,
   SidebarInset,
   SidebarRail
@@ -45,7 +43,6 @@ const Portal = () => {
   const { toast } = useToast();
 
   const handleSignOut = () => {
-    // Here you would add actual sign out logic
     toast({
       title: "Signed out",
       description: "You have been signed out successfully.",
@@ -56,7 +53,6 @@ const Portal = () => {
   const handleLocationSelect = (location: Location) => {
     setSelectedLocation(location);
     setActiveSection('locations');
-    // In a real app, you would pass the selected location ID to the Locations component
   };
   
   const handleLocationClick = (location: Location) => {
@@ -142,7 +138,6 @@ const Portal = () => {
           </SidebarContent>
           
           <SidebarFooter className="p-4 space-y-4">
-            {/* User Profile Section - Updated to be fully clickable */}
             <Button 
               variant="ghost" 
               className="w-full p-2 h-auto flex items-center justify-start hover:bg-sidebar-accent cursor-pointer" 
@@ -172,7 +167,6 @@ const Portal = () => {
           </SidebarFooter>
         </Sidebar>
         
-        {/* Add SidebarRail for better UX when collapsing/expanding */}
         <SidebarRail />
         
         <SidebarInset className="p-6">

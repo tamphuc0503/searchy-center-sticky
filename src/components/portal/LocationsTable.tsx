@@ -20,9 +20,10 @@ export interface LocationData {
 interface LocationsTableProps {
   locations: LocationData[];
   title: string;
+  onLocationClick?: (location: LocationData) => void;
 }
 
-const LocationsTable: React.FC<LocationsTableProps> = ({ locations, title }) => {
+const LocationsTable: React.FC<LocationsTableProps> = ({ locations, title, onLocationClick }) => {
   return (
     <div>
       <h2 className="text-lg font-semibold mb-4">{title}</h2>
@@ -52,7 +53,11 @@ const LocationsTable: React.FC<LocationsTableProps> = ({ locations, title }) => 
                 </div>
               </TableCell>
               <TableCell className="text-right">
-                <Button variant="ghost" size="icon">
+                <Button 
+                  variant="ghost" 
+                  size="icon"
+                  onClick={() => onLocationClick && onLocationClick(location)}
+                >
                   <ChevronRight className="h-4 w-4" />
                 </Button>
               </TableCell>

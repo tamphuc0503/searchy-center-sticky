@@ -74,9 +74,9 @@ const Locations: React.FC<LocationsProps> = ({ selectedLocation, onLocationClick
   const handleLocationClick = (locationData: LocationData) => {
     if (!onLocationClick) return;
     
-    const findLocation = (locations: Location[], id: string): Location | null => {
+    const findLocation = (locations: Location[], id: string | number): Location | null => {
       for (const location of locations) {
-        if (location.id === id) return location;
+        if (location.id === id.toString()) return location;
         
         if (location.children.length > 0) {
           const found = findLocation(location.children, id);
