@@ -142,18 +142,24 @@ const Portal = () => {
           </SidebarContent>
           
           <SidebarFooter className="p-4 space-y-4">
-            {/* User Profile Section */}
-            <div className="flex items-center space-x-3 px-2 py-2 rounded-md hover:bg-sidebar-accent cursor-pointer" onClick={handleUserSettingsClick}>
-              <Avatar>
-                <AvatarImage src="https://github.com/shadcn.png" alt="User" />
-                <AvatarFallback>JD</AvatarFallback>
-              </Avatar>
-              <div>
-                <p className="text-sm font-medium">John Doe</p>
-                <p className="text-xs text-muted-foreground">john.doe@example.com</p>
+            {/* User Profile Section - Updated to be fully clickable */}
+            <Button 
+              variant="ghost" 
+              className="w-full p-2 h-auto flex items-center justify-start hover:bg-sidebar-accent cursor-pointer" 
+              onClick={handleUserSettingsClick}
+            >
+              <div className="flex items-center space-x-3">
+                <Avatar>
+                  <AvatarImage src="https://github.com/shadcn.png" alt="User" />
+                  <AvatarFallback>JD</AvatarFallback>
+                </Avatar>
+                <div className="text-left">
+                  <p className="text-sm font-medium">John Doe</p>
+                  <p className="text-xs text-muted-foreground">john.doe@example.com</p>
+                </div>
+                <UserCog className="ml-auto h-4 w-4 text-muted-foreground" />
               </div>
-              <UserCog className="ml-auto h-4 w-4 text-muted-foreground" />
-            </div>
+            </Button>
             <Separator />
             <Button 
               variant="outline" 

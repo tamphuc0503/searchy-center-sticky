@@ -36,8 +36,8 @@ const LocationHierarchyPanel: React.FC<LocationHierarchyPanelProps> = ({
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-        <ScrollArea className="h-[250px]">
-          <div className="text-xs pr-3">
+        <ScrollArea className="h-[250px]" orientation="both">
+          <div className="text-xs pr-3 min-w-[350px]">
             <LocationTree 
               locations={locations} 
               onSelect={onLocationSelect}
