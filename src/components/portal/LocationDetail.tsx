@@ -54,15 +54,6 @@ const LocationDetail: React.FC<LocationDetailProps> = ({ location }) => {
   // Assign the first user as team lead for demo purposes
   const teamLead = users[0];
 
-  const [expandedFiles, setExpandedFiles] = useState<Record<string, boolean>>({});
-
-  const toggleFileExpand = (fileId: string) => {
-    setExpandedFiles(prev => ({
-      ...prev,
-      [fileId]: !prev[fileId]
-    }));
-  };
-
   const getHazardBadgeVariant = (level: 'Low' | 'Medium' | 'High') => {
     switch(level) {
       case 'Low': return { variant: 'outline' as const, className: 'bg-green-50 text-green-700 border-green-200' };
@@ -119,7 +110,7 @@ const LocationDetail: React.FC<LocationDetailProps> = ({ location }) => {
                 </div>
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Child Locations</p>
-                  <p>{location.children.length || 'No sub locations'}</p>
+                  <p>{location.children?.length || 0}</p>
                 </div>
               </div>
             </CardContent>
@@ -159,7 +150,7 @@ const LocationDetail: React.FC<LocationDetailProps> = ({ location }) => {
               <CardDescription>Child locations under this location</CardDescription>
             </CardHeader>
             <CardContent>
-              {location.children.length > 0 ? (
+              {location.children && location.children.length > 0 ? (
                 <div className="space-y-2">
                   {location.children.map(child => (
                     <Card key={child.id} className="p-4 hover:bg-muted/50 cursor-pointer">

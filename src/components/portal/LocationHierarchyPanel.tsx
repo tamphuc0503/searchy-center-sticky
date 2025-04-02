@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Search, ChevronDown, ChevronRight } from 'lucide-react';
@@ -35,8 +36,8 @@ const LocationHierarchyPanel: React.FC<LocationHierarchyPanelProps> = ({
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-        <ScrollArea className="h-[250px]">
-          <div className="text-xs pr-3 min-w-[350px]">
+        <ScrollArea className="h-[250px]" style={{ overflow: 'auto' }}>
+          <div className="text-xs pr-3" style={{ minWidth: '350px', overflowX: 'auto' }}>
             <LocationTree 
               locations={locations} 
               onSelect={onLocationSelect}
