@@ -70,10 +70,14 @@ const LocationDetail: React.FC<LocationDetailProps> = ({ location }) => {
       </div>
 
       <Tabs defaultValue="info" className="w-full">
-        <TabsList className="grid w-full max-w-md grid-cols-2">
+        <TabsList className="grid w-full max-w-md grid-cols-3">
           <TabsTrigger value="info" className="flex items-center gap-2">
             <Building className="h-4 w-4" />
             Location Information
+          </TabsTrigger>
+          <TabsTrigger value="users" className="flex items-center gap-2">
+            <Users className="h-4 w-4" />
+            Users
           </TabsTrigger>
           <TabsTrigger value="sds" className="flex items-center gap-2">
             <FileText className="h-4 w-4" />
@@ -116,7 +120,33 @@ const LocationDetail: React.FC<LocationDetailProps> = ({ location }) => {
             </CardContent>
           </Card>
 
-          {/* Users Card */}
+          {/* Sub-Locations Card */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Sub Locations</CardTitle>
+              <CardDescription>Child locations under this location</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {location.children && location.children.length > 0 ? (
+                <div className="space-y-2">
+                  {location.children.map(child => (
+                    <Card key={child.id} className="p-4 hover:bg-muted/50 cursor-pointer">
+                      <div className="flex items-center gap-2">
+                        <MapPin className="h-4 w-4 text-muted-foreground" />
+                        <span>{child.name}</span>
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-muted-foreground">No sub locations</p>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Users Tab Content */}
+        <TabsContent value="users" className="mt-4">
           <Card>
             <CardHeader>
               <CardTitle>Users</CardTitle>
@@ -140,30 +170,6 @@ const LocationDetail: React.FC<LocationDetailProps> = ({ location }) => {
                   </div>
                 ))}
               </div>
-            </CardContent>
-          </Card>
-
-          {/* Sub-Locations Card */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Sub Locations</CardTitle>
-              <CardDescription>Child locations under this location</CardDescription>
-            </CardHeader>
-            <CardContent>
-              {location.children && location.children.length > 0 ? (
-                <div className="space-y-2">
-                  {location.children.map(child => (
-                    <Card key={child.id} className="p-4 hover:bg-muted/50 cursor-pointer">
-                      <div className="flex items-center gap-2">
-                        <MapPin className="h-4 w-4 text-muted-foreground" />
-                        <span>{child.name}</span>
-                      </div>
-                    </Card>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-muted-foreground">No sub locations</p>
-              )}
             </CardContent>
           </Card>
         </TabsContent>
