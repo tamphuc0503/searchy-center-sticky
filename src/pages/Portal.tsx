@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
@@ -50,9 +51,10 @@ const Portal = () => {
     navigate('/');
   };
 
+  // Modified to set location detail view
   const handleLocationSelect = (location: Location) => {
     setSelectedLocation(location);
-    setActiveSection('locations');
+    setActiveSection('locationDetail');
   };
   
   const handleLocationClick = (location: Location) => {
@@ -121,7 +123,7 @@ const Portal = () => {
                         </CollapsibleTrigger>
                       </div>
                       <CollapsibleContent>
-                        <div className="px-3 py-2 max-h-[300px] overflow-y-auto">
+                        <div className="px-3 py-2">
                           <LocationHierarchyPanel 
                             locations={dummyLocations}
                             selectedLocationId={selectedLocation?.id}

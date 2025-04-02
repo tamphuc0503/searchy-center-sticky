@@ -5,7 +5,6 @@ import { Search, ChevronDown, ChevronRight } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import LocationTree, { Location } from './LocationTree';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 
 interface LocationHierarchyPanelProps {
