@@ -20,7 +20,7 @@ import {
 import { LayoutDashboard, FileText, MapPin, LogOut, ChevronDown, ChevronRight, User, UserCog } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import Dashboard from '@/components/portal/Dashboard';
-import MySDSFiles from '@/components/portal/MySDSFiles';
+import MySDSFiles, { SDSFile } from '@/components/portal/MySDSFiles';
 import Locations from '@/components/portal/Locations';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -35,11 +35,13 @@ import { dummyLocations } from '@/components/portal/LocationsData';
 import { Location } from '@/components/portal/LocationTree';
 import UserSettings from '@/components/portal/UserSettings';
 import LocationDetail from '@/components/portal/LocationDetail';
+import SDSDetail from '@/components/portal/SDSDetail';
 
 const Portal = () => {
-  const [activeSection, setActiveSection] = React.useState<'dashboard' | 'files' | 'locations' | 'settings' | 'locationDetail'>('dashboard');
+  const [activeSection, setActiveSection] = React.useState<'dashboard' | 'files' | 'locations' | 'settings' | 'locationDetail' | 'sdsDetail'>('dashboard');
   const [isLocationsOpen, setIsLocationsOpen] = React.useState(false);
   const [selectedLocation, setSelectedLocation] = React.useState<Location | null>(null);
+  const [selectedSDS, setSelectedSDS] = React.useState<SDSFile | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -64,6 +66,17 @@ const Portal = () => {
   
   const handleUserSettingsClick = () => {
     setActiveSection('settings');
+  };
+
+  // Handle SDS selection
+  const handleSDSSelect = (sds: SDSFile) => {
+    setSelectedSDS(sds);
+    setActiveSection('sdsDetail');
+  };
+
+  // Go back from SDS detail to files list
+  const handleBackFromSDSDetail = () => {
+    setActiveSection('files');
   };
 
   return (
@@ -93,8 +106,14 @@ const Portal = () => {
                   
                   <SidebarMenuItem>
                     <SidebarMenuButton 
-                      isActive={activeSection === 'files'}
-                      onClick={() => setActiveSection('files')}
+                      isActive={activeSection === 'files' || activeSection === 'sdsDetail'}
+                      onClick={() => {
+                        if (activeSection === 'sdsDetail') {
+                          setActiveSection('files');
+                        } else {
+                          setActiveSection('files');
+                        }
+                      }}
                       tooltip="My SDS Files"
                     >
                       <FileText />
@@ -173,10 +192,11 @@ const Portal = () => {
         
         <SidebarInset className="p-6">
           {activeSection === 'dashboard' && <Dashboard />}
-          {activeSection === 'files' && <MySDSFiles />}
+          {activeSection === 'files' && <MySDSFiles onSelectSDS={handleSDSSelect} />}
           {activeSection === 'locations' && <Locations selectedLocation={selectedLocation} onLocationClick={handleLocationClick} />}
           {activeSection === 'settings' && <UserSettings />}
           {activeSection === 'locationDetail' && selectedLocation && <LocationDetail location={selectedLocation} />}
+          {activeSection === 'sdsDetail' && selectedSDS && <SDSDetail sds={selectedSDS} onBack={handleBackFromSDSDetail} />}
         </SidebarInset>
       </div>
     </SidebarProvider>

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -22,29 +21,37 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Checkbox } from '@/components/ui/checkbox';
 
-const MySDSFiles = () => {
-  // Sample SDS files data with source information
-  const files = [
-    { id: 1, name: 'Acetone', dateAdded: '2023-10-15', manufacturer: '3M', category: 'Solvent', source: 'global' },
-    { id: 2, name: 'Methanol', dateAdded: '2023-09-23', manufacturer: 'DuPont', category: 'Alcohol', source: 'mine' },
-    { id: 3, name: 'Toluene', dateAdded: '2023-08-05', manufacturer: 'BASF', category: 'Solvent', source: 'members' },
-    { id: 4, name: 'Ethanol', dateAdded: '2023-07-18', manufacturer: 'Dow Chemical', category: 'Alcohol', source: 'global' },
-    { id: 5, name: 'Isopropyl Alcohol', dateAdded: '2023-06-30', manufacturer: '3M', category: 'Alcohol', source: 'mine' },
+export interface SDSFile {
+  id: number;
+  name: string;
+  dateAdded: string;
+  manufacturer: string;
+  category: string;
+  source: 'global' | 'mine' | 'members';
+  description?: string;
+  hazards?: string[];
+  downloadUrl?: string;
+}
+
+const MySDSFiles = ({ onSelectSDS }: { onSelectSDS?: (sds: SDSFile) => void }) => {
+  const files: SDSFile[] = [
+    { id: 1, name: 'Acetone', dateAdded: '2023-10-15', manufacturer: '3M', category: 'Solvent', source: 'global', description: 'Common solvent used in many applications including nail polish remover and paint thinner.', hazards: ['Flammable', 'Eye irritant'] },
+    { id: 2, name: 'Methanol', dateAdded: '2023-09-23', manufacturer: 'DuPont', category: 'Alcohol', source: 'mine', description: 'Highly toxic alcohol used as a solvent and fuel. Handle with extreme care.', hazards: ['Toxic', 'Flammable', 'CNS depressant'] },
+    { id: 3, name: 'Toluene', dateAdded: '2023-08-05', manufacturer: 'BASF', category: 'Solvent', source: 'members', description: 'Aromatic hydrocarbon used in paints, paint thinners, and adhesives.', hazards: ['Flammable', 'Reproductive toxin'] },
+    { id: 4, name: 'Ethanol', dateAdded: '2023-07-18', manufacturer: 'Dow Chemical', category: 'Alcohol', source: 'global', description: 'Common alcohol used in many applications including disinfectants and beverages.', hazards: ['Flammable'] },
+    { id: 5, name: 'Isopropyl Alcohol', dateAdded: '2023-06-30', manufacturer: '3M', category: 'Alcohol', source: 'mine', description: 'Common disinfectant and cleaning agent.', hazards: ['Flammable', 'Eye irritant'] },
   ];
 
-  // State for upload dialog
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploading, setUploading] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [hasNotifications, setHasNotifications] = useState(true);
 
-  // SDS filter state
   const [activeFilter, setActiveFilter] = useState<string>("all");
   const [filteredFiles, setFilteredFiles] = useState(files);
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Processing notifications
   const [processingFiles, setProcessingFiles] = useState([
     { id: 1, name: 'New SDS File.pdf', status: 'processing', progress: 60 },
     { id: 2, name: 'Chemical Report.pdf', status: 'complete', progress: 100 }
@@ -71,7 +78,6 @@ const MySDSFiles = () => {
     setUploading(true);
     setUploadProgress(0);
 
-    // Simulate file upload progress
     const interval = setInterval(() => {
       setUploadProgress((prev) => {
         if (prev >= 100) {
@@ -79,7 +85,6 @@ const MySDSFiles = () => {
           setUploading(false);
           setUploadDialogOpen(false);
           
-          // Add to processing files
           setProcessingFiles(prev => [...prev, {
             id: Math.random(),
             name: selectedFile.name,
@@ -94,7 +99,6 @@ const MySDSFiles = () => {
             description: "Your SDS file has been uploaded and is now processing.",
           });
           
-          // Reset form
           setSelectedFile(null);
           return 100;
         }
@@ -103,7 +107,6 @@ const MySDSFiles = () => {
     }, 300);
   };
 
-  // Handle filter changes
   const handleFilterChange = (value: string) => {
     if (value) {
       setActiveFilter(value);
@@ -116,21 +119,19 @@ const MySDSFiles = () => {
     }
   };
 
-  // Filter source icon
   const getSourceIcon = (source: string) => {
     switch (source) {
       case 'global':
-        return <Globe className="h-4 w-4 text-sky-500" title="Global SDS" />;
+        return <Globe className="h-4 w-4 text-sky-500" aria-label="Global SDS" />;
       case 'mine':
-        return <User className="h-4 w-4 text-emerald-500" title="Uploaded by me" />;
+        return <User className="h-4 w-4 text-emerald-500" aria-label="Uploaded by me" />;
       case 'members':
-        return <Users className="h-4 w-4 text-amber-500" title="Uploaded by team members" />;
+        return <Users className="h-4 w-4 text-amber-500" aria-label="Uploaded by team members" />;
       default:
         return null;
     }
   };
 
-  // Handle search
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const query = e.target.value.toLowerCase();
     setSearchQuery(query);
@@ -150,6 +151,12 @@ const MySDSFiles = () => {
     }
     
     setFilteredFiles(filtered);
+  };
+
+  const handleSDSClick = (sds: SDSFile) => {
+    if (onSelectSDS) {
+      onSelectSDS(sds);
+    }
   };
 
   return (
@@ -285,7 +292,7 @@ const MySDSFiles = () => {
             </TableHeader>
             <TableBody>
               {filteredFiles.map((file) => (
-                <TableRow key={file.id}>
+                <TableRow key={file.id} className="cursor-pointer hover:bg-muted/50" onClick={() => handleSDSClick(file)}>
                   <TableCell className="w-10">
                     {getSourceIcon(file.source)}
                   </TableCell>
@@ -295,10 +302,10 @@ const MySDSFiles = () => {
                   <TableCell>{file.dateAdded}</TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
-                      <Button variant="ghost" size="icon">
+                      <Button variant="ghost" size="icon" onClick={(e) => { e.stopPropagation(); }}>
                         <Eye className="h-4 w-4" />
                       </Button>
-                      <Button variant="ghost" size="icon">
+                      <Button variant="ghost" size="icon" onClick={(e) => { e.stopPropagation(); }}>
                         <Download className="h-4 w-4" />
                       </Button>
                     </div>
@@ -310,7 +317,6 @@ const MySDSFiles = () => {
         </CardContent>
       </Card>
       
-      {/* Upload Dialog */}
       <Dialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
