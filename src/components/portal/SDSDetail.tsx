@@ -2,10 +2,12 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeft, Download, Calendar, Tag, Building, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, Download, Calendar, Tag, Building, AlertTriangle, QrCode } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { SDSFile } from './MySDSFiles';
+import QRCode from 'react-qr-code';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 interface SDSDetailProps {
   sds: SDSFile;
@@ -13,6 +15,9 @@ interface SDSDetailProps {
 }
 
 const SDSDetail = ({ sds, onBack }: SDSDetailProps) => {
+  // QR code value - typically a URL to the SDS document or a unique identifier
+  const qrCodeValue = `sds://document/${sds.id}`;
+
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">
@@ -23,7 +28,23 @@ const SDSDetail = ({ sds, onBack }: SDSDetailProps) => {
           <h1 className="text-2xl font-bold">{sds.name}</h1>
           <p className="text-muted-foreground">Safety Data Sheet</p>
         </div>
-        <div className="ml-auto">
+        <div className="ml-auto flex items-center gap-2">
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline" size="icon" className="flex items-center justify-center">
+                <QrCode className="h-4 w-4" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-4">
+              <div className="space-y-2">
+                <h4 className="font-medium">SDS QR Code</h4>
+                <p className="text-sm text-muted-foreground">Scan to access this SDS</p>
+                <div className="p-2 bg-white rounded-md">
+                  <QRCode value={qrCodeValue} size={150} />
+                </div>
+              </div>
+            </PopoverContent>
+          </Popover>
           <Button className="flex items-center gap-2">
             <Download className="h-4 w-4" />
             Download SDS
@@ -91,8 +112,11 @@ const SDSDetail = ({ sds, onBack }: SDSDetailProps) => {
           </Card>
 
           <Card>
-            <CardHeader>
+            <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle>SDS Document Preview</CardTitle>
+              <div className="flex items-center gap-2">
+                <QRCode value={qrCodeValue} size={60} />
+              </div>
             </CardHeader>
             <CardContent className="h-80 flex items-center justify-center bg-muted/30">
               <div className="text-center text-muted-foreground">
