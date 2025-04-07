@@ -1,10 +1,14 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { FileUp, Search, Filter, Download, Eye } from 'lucide-react';
+import { FileUp, Search, Filter, Download, Eye, BellDot } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from '@/components/ui/dialog';
+import { Progress } from '@/components/ui/progress';
+import { useToast } from '@/hooks/use-toast';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 const MySDSFiles = () => {
   // Sample SDS files data
@@ -16,6 +20,72 @@ const MySDSFiles = () => {
     { id: 5, name: 'Isopropyl Alcohol', dateAdded: '2023-06-30', manufacturer: '3M', category: 'Alcohol' },
   ];
 
+  // State for upload dialog
+  const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploading, setUploading] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [hasNotifications, setHasNotifications] = useState(true);
+
+  // Processing notifications
+  const [processingFiles, setProcessingFiles] = useState([
+    { id: 1, name: 'New SDS File.pdf', status: 'processing', progress: 60 },
+    { id: 2, name: 'Chemical Report.pdf', status: 'complete', progress: 100 }
+  ]);
+
+  const { toast } = useToast();
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setSelectedFile(e.target.files[0]);
+    }
+  };
+
+  const handleUpload = () => {
+    if (!selectedFile) {
+      toast({
+        title: "No file selected",
+        description: "Please select a file to upload",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setUploading(true);
+    setUploadProgress(0);
+
+    // Simulate file upload progress
+    const interval = setInterval(() => {
+      setUploadProgress((prev) => {
+        if (prev >= 100) {
+          clearInterval(interval);
+          setUploading(false);
+          setUploadDialogOpen(false);
+          
+          // Add to processing files
+          setProcessingFiles(prev => [...prev, {
+            id: Math.random(),
+            name: selectedFile.name,
+            status: 'processing',
+            progress: 20
+          }]);
+          
+          setHasNotifications(true);
+          
+          toast({
+            title: "Upload Complete",
+            description: "Your SDS file has been uploaded and is now processing.",
+          });
+          
+          // Reset form
+          setSelectedFile(null);
+          return 100;
+        }
+        return prev + 10;
+      });
+    }, 300);
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -23,10 +93,51 @@ const MySDSFiles = () => {
           <h1 className="text-2xl font-bold">My SDS Files</h1>
           <p className="text-muted-foreground">Manage your safety data sheets</p>
         </div>
-        <Button className="flex items-center gap-2">
-          <FileUp className="h-4 w-4" />
-          Upload SDS
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button className="flex items-center gap-2" onClick={() => setUploadDialogOpen(true)}>
+            <FileUp className="h-4 w-4" />
+            Upload SDS
+          </Button>
+          
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline" size="icon" className="relative">
+                <BellDot className="h-4 w-4" />
+                {hasNotifications && (
+                  <div className="absolute -top-1 -right-1 h-2 w-2 bg-red-500 rounded-full"></div>
+                )}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-80 p-0">
+              <div className="p-4 border-b">
+                <h3 className="font-medium">SDS Processing Status</h3>
+              </div>
+              <div className="max-h-80 overflow-auto p-2">
+                {processingFiles.length === 0 ? (
+                  <div className="p-4 text-center text-muted-foreground">
+                    No files processing
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {processingFiles.map((file) => (
+                      <div key={file.id} className="p-2 border rounded-md">
+                        <div className="flex justify-between items-center mb-1">
+                          <span className="text-sm font-medium truncate max-w-[200px]">
+                            {file.name}
+                          </span>
+                          <span className="text-xs capitalize text-muted-foreground">
+                            {file.status}
+                          </span>
+                        </div>
+                        <Progress value={file.progress} className="h-2" />
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </PopoverContent>
+          </Popover>
+        </div>
       </div>
       
       <div className="flex gap-4 items-center">
@@ -77,6 +188,54 @@ const MySDSFiles = () => {
           </Table>
         </CardContent>
       </Card>
+      
+      {/* Upload Dialog */}
+      <Dialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Upload SDS File</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="grid w-full items-center gap-2">
+              <label htmlFor="sds-file" className="text-sm font-medium">
+                Select SDS Document
+              </label>
+              <Input
+                id="sds-file"
+                type="file"
+                accept=".pdf,.doc,.docx"
+                onChange={handleFileChange}
+                disabled={uploading}
+              />
+              {selectedFile && (
+                <p className="text-sm text-muted-foreground">
+                  Selected file: {selectedFile.name}
+                </p>
+              )}
+            </div>
+            
+            {uploading && (
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span>Uploading...</span>
+                  <span>{uploadProgress}%</span>
+                </div>
+                <Progress value={uploadProgress} className="h-2" />
+              </div>
+            )}
+          </div>
+          <DialogFooter className="sm:justify-between">
+            <DialogClose asChild>
+              <Button variant="outline" disabled={uploading}>
+                Cancel
+              </Button>
+            </DialogClose>
+            <Button onClick={handleUpload} disabled={!selectedFile || uploading}>
+              {uploading ? "Uploading..." : "Upload"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
