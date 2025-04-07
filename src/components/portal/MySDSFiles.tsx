@@ -3,21 +3,33 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { FileUp, Search, Filter, Download, Eye, BellDot } from 'lucide-react';
+import { FileUp, Search, Filter, Download, Eye, BellDot, Globe, User, Users } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from '@/components/ui/dialog';
 import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { Badge } from '@/components/ui/badge';
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuTrigger,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuCheckboxItem,
+  DropdownMenuLabel
+} from '@/components/ui/dropdown-menu';
+import { Checkbox } from '@/components/ui/checkbox';
 
 const MySDSFiles = () => {
-  // Sample SDS files data
+  // Sample SDS files data with source information
   const files = [
-    { id: 1, name: 'Acetone', dateAdded: '2023-10-15', manufacturer: '3M', category: 'Solvent' },
-    { id: 2, name: 'Methanol', dateAdded: '2023-09-23', manufacturer: 'DuPont', category: 'Alcohol' },
-    { id: 3, name: 'Toluene', dateAdded: '2023-08-05', manufacturer: 'BASF', category: 'Solvent' },
-    { id: 4, name: 'Ethanol', dateAdded: '2023-07-18', manufacturer: 'Dow Chemical', category: 'Alcohol' },
-    { id: 5, name: 'Isopropyl Alcohol', dateAdded: '2023-06-30', manufacturer: '3M', category: 'Alcohol' },
+    { id: 1, name: 'Acetone', dateAdded: '2023-10-15', manufacturer: '3M', category: 'Solvent', source: 'global' },
+    { id: 2, name: 'Methanol', dateAdded: '2023-09-23', manufacturer: 'DuPont', category: 'Alcohol', source: 'mine' },
+    { id: 3, name: 'Toluene', dateAdded: '2023-08-05', manufacturer: 'BASF', category: 'Solvent', source: 'members' },
+    { id: 4, name: 'Ethanol', dateAdded: '2023-07-18', manufacturer: 'Dow Chemical', category: 'Alcohol', source: 'global' },
+    { id: 5, name: 'Isopropyl Alcohol', dateAdded: '2023-06-30', manufacturer: '3M', category: 'Alcohol', source: 'mine' },
   ];
 
   // State for upload dialog
@@ -26,6 +38,11 @@ const MySDSFiles = () => {
   const [uploading, setUploading] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [hasNotifications, setHasNotifications] = useState(true);
+
+  // SDS filter state
+  const [activeFilter, setActiveFilter] = useState<string>("all");
+  const [filteredFiles, setFilteredFiles] = useState(files);
+  const [searchQuery, setSearchQuery] = useState("");
 
   // Processing notifications
   const [processingFiles, setProcessingFiles] = useState([
@@ -86,6 +103,55 @@ const MySDSFiles = () => {
     }, 300);
   };
 
+  // Handle filter changes
+  const handleFilterChange = (value: string) => {
+    if (value) {
+      setActiveFilter(value);
+      if (value === "all") {
+        setFilteredFiles(files);
+      } else {
+        const source = value === "global" ? "global" : value === "mine" ? "mine" : "members";
+        setFilteredFiles(files.filter(file => file.source === source));
+      }
+    }
+  };
+
+  // Filter source icon
+  const getSourceIcon = (source: string) => {
+    switch (source) {
+      case 'global':
+        return <Globe className="h-4 w-4 text-sky-500" title="Global SDS" />;
+      case 'mine':
+        return <User className="h-4 w-4 text-emerald-500" title="Uploaded by me" />;
+      case 'members':
+        return <Users className="h-4 w-4 text-amber-500" title="Uploaded by team members" />;
+      default:
+        return null;
+    }
+  };
+
+  // Handle search
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const query = e.target.value.toLowerCase();
+    setSearchQuery(query);
+    
+    let filtered = files;
+    if (activeFilter !== "all") {
+      const source = activeFilter === "global" ? "global" : activeFilter === "mine" ? "mine" : "members";
+      filtered = files.filter(file => file.source === source);
+    }
+    
+    if (query) {
+      filtered = filtered.filter(file => 
+        file.name.toLowerCase().includes(query) || 
+        file.manufacturer.toLowerCase().includes(query) || 
+        file.category.toLowerCase().includes(query)
+      );
+    }
+    
+    setFilteredFiles(filtered);
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -140,14 +206,65 @@ const MySDSFiles = () => {
         </div>
       </div>
       
-      <div className="flex gap-4 items-center">
+      <div className="flex flex-col md:flex-row gap-4 items-start md:items-center">
         <div className="relative flex-1">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input placeholder="Search SDS files..." className="pl-8" />
+          <Input 
+            placeholder="Search SDS files..." 
+            className="pl-8" 
+            value={searchQuery}
+            onChange={handleSearch}
+          />
         </div>
-        <Button variant="outline" size="icon">
-          <Filter className="h-4 w-4" />
-        </Button>
+        
+        <ToggleGroup type="single" value={activeFilter} onValueChange={handleFilterChange}>
+          <ToggleGroupItem value="all" aria-label="All SDS">
+            All
+          </ToggleGroupItem>
+          <ToggleGroupItem value="global" aria-label="Global SDS">
+            <Globe className="h-4 w-4 mr-1" />
+            Global
+          </ToggleGroupItem>
+          <ToggleGroupItem value="mine" aria-label="My SDS">
+            <User className="h-4 w-4 mr-1" />
+            Mine
+          </ToggleGroupItem>
+          <ToggleGroupItem value="members" aria-label="Team SDS">
+            <Users className="h-4 w-4 mr-1" />
+            Team
+          </ToggleGroupItem>
+        </ToggleGroup>
+        
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" size="icon">
+              <Filter className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-48">
+            <DropdownMenuLabel>Filter by</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuLabel className="text-xs text-muted-foreground font-normal">Categories</DropdownMenuLabel>
+            <DropdownMenuItem className="flex items-center gap-2">
+              <Checkbox id="solvent" />
+              <label htmlFor="solvent" className="text-sm">Solvent</label>
+            </DropdownMenuItem>
+            <DropdownMenuItem className="flex items-center gap-2">
+              <Checkbox id="alcohol" />
+              <label htmlFor="alcohol" className="text-sm">Alcohol</label>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuLabel className="text-xs text-muted-foreground font-normal">Manufacturers</DropdownMenuLabel>
+            <DropdownMenuItem className="flex items-center gap-2">
+              <Checkbox id="3m" />
+              <label htmlFor="3m" className="text-sm">3M</label>
+            </DropdownMenuItem>
+            <DropdownMenuItem className="flex items-center gap-2">
+              <Checkbox id="dupont" />
+              <label htmlFor="dupont" className="text-sm">DuPont</label>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
       
       <Card>
@@ -158,6 +275,7 @@ const MySDSFiles = () => {
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead>Source</TableHead>
                 <TableHead>Name</TableHead>
                 <TableHead>Manufacturer</TableHead>
                 <TableHead>Category</TableHead>
@@ -166,8 +284,11 @@ const MySDSFiles = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {files.map((file) => (
+              {filteredFiles.map((file) => (
                 <TableRow key={file.id}>
+                  <TableCell className="w-10">
+                    {getSourceIcon(file.source)}
+                  </TableCell>
                   <TableCell className="font-medium">{file.name}</TableCell>
                   <TableCell>{file.manufacturer}</TableCell>
                   <TableCell>{file.category}</TableCell>
