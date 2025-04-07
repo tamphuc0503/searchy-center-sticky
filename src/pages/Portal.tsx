@@ -1,5 +1,4 @@
-
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   SidebarProvider, 
@@ -44,6 +43,60 @@ const Portal = () => {
   const [selectedSDS, setSelectedSDS] = React.useState<SDSFile | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  // Effect to listen for custom events from Dashboard
+  useEffect(() => {
+    // Handle SDS detail view request
+    const handleViewSdsDetail = (event: CustomEvent<{ sdsId: number }>) => {
+      // Find the SDS with the matching ID
+      const sdsFiles: SDSFile[] = [
+        { id: 1, name: 'Acetone', dateAdded: '2023-10-15', manufacturer: '3M', category: 'Solvent', source: 'global', description: 'Common solvent used in many applications including nail polish remover and paint thinner.', hazards: ['Flammable', 'Eye irritant'] },
+        { id: 2, name: 'Methanol', dateAdded: '2023-09-23', manufacturer: 'DuPont', category: 'Alcohol', source: 'mine', description: 'Highly toxic alcohol used as a solvent and fuel. Handle with extreme care.', hazards: ['Toxic', 'Flammable', 'CNS depressant'] },
+        { id: 3, name: 'Toluene', dateAdded: '2023-08-05', manufacturer: 'BASF', category: 'Solvent', source: 'members', description: 'Aromatic hydrocarbon used in paints, paint thinners, and adhesives.', hazards: ['Flammable', 'Reproductive toxin'] },
+        { id: 4, name: 'Ethanol', dateAdded: '2023-07-18', manufacturer: 'Dow Chemical', category: 'Alcohol', source: 'global', description: 'Common alcohol used in many applications including disinfectants and beverages.', hazards: ['Flammable'] },
+        { id: 5, name: 'Isopropyl Alcohol', dateAdded: '2023-06-30', manufacturer: '3M', category: 'Alcohol', source: 'mine', description: 'Common disinfectant and cleaning agent.', hazards: ['Flammable', 'Eye irritant'] },
+      ];
+
+      const sds = sdsFiles.find(sds => sds.id === event.detail.sdsId);
+      if (sds) {
+        setSelectedSDS(sds);
+        setActiveSection('sdsDetail');
+      }
+    };
+
+    // Handle location detail view request
+    const handleViewLocationDetail = (event: CustomEvent<{ locationId: number }>) => {
+      // Find the location with the matching ID (using the dummyLocations)
+      const findLocation = (locations: Location[], id: number): Location | null => {
+        for (const location of locations) {
+          if (location.id === id) {
+            return location;
+          }
+          if (location.children) {
+            const found = findLocation(location.children, id);
+            if (found) return found;
+          }
+        }
+        return null;
+      };
+      
+      const location = findLocation(dummyLocations, event.detail.locationId);
+      if (location) {
+        setSelectedLocation(location);
+        setActiveSection('locationDetail');
+      }
+    };
+
+    // Add event listeners
+    window.addEventListener('viewSdsDetail', handleViewSdsDetail as EventListener);
+    window.addEventListener('viewLocationDetail', handleViewLocationDetail as EventListener);
+
+    // Clean up
+    return () => {
+      window.removeEventListener('viewSdsDetail', handleViewSdsDetail as EventListener);
+      window.removeEventListener('viewLocationDetail', handleViewLocationDetail as EventListener);
+    };
+  }, []);
 
   const handleSignOut = () => {
     toast({
